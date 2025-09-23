@@ -27,7 +27,7 @@ For a new project, start by defining the data schema and sources. Once the data 
 * landing ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/landing_chatbot.png)
 * chatbot ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/chatbot.png)
 * sample dashboard 1 ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2018-58-58.png)
-* Login ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2019-01-00.png)
+* sample dashboard 2 ![login](https://github.com/MulukenSholaye/business_intelligence/blob/0be39e1310b00862e7ab2c39a6ea86d0aa19a70c/screenshots/Screenshot%20from%202025-09-23%2018-59-17.png)
 * Login ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2019-01-00.png)
 * Login ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2019-01-00.png)
 * Login ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2019-01-00.png)
