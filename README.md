@@ -13,10 +13,10 @@ This system is a robust solution designed to streamline tax management and repor
 
 # Technology Stack
   * Data Warehouse: Optimized for analytical queries, using technologies like Snowflake, apache hive, with druid based analysis.
-  * ETL/ELT: Tools like Apache Airflow, Talend, or dbt (data build tool) for managing and orchestrating data pipelines.
-  * Business Intelligence (BI) Platform: Interactive dashboards and reports are created using tools such as Tableau, Microsoft Power BI, or Looker Studio.
+  * ETL/ELT: Tools like Apache Airflow, nifi for managing and orchestrating data pipelines.
+  * Business Intelligence (BI) Platform: Interactive dashboards and reports are created using tools opensearch, superset.
   * Database: Source data is typically stored in transactional databases like PostgreSQL or MySQL.
-  * Programming Language: Python is commonly used for scripting, data manipulation, and building machine learning models.
+  * Programming Language: django Python is commonly used for scripting, data manipulation, and building machine learning models.
 
 # Getting Started
 For a new project, start by defining the data schema and sources. Once the data warehouse is established, you can begin building the ETL pipelines and designing the dashboards.
