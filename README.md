@@ -1,6 +1,6 @@
 # Business Intelligence & Data Warehouse System
 This system is a robust solution designed to streamline tax management and reporting for financial institutions and government agencies. By consolidating data into a centralized data warehouse, it provides a powerful platform for analysis, monitoring, and strategic decision-making.
-![](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.intellspot.com%2Fbusiness-intelligence-strategy%2F&psig=AOvVaw08Y8dp8dT28qMxXk6eSCw5&ust=1758745771735000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCOjettvc748DFQAAAAAdAAAAABAE)
+![ff](https://github.com/MulukenSholaye/business_intelligence/blob/ec1430ca6d79c16be1744174c7ca8e9799f1c43c/Business-intelligence.jpg)
 # Key Features
   * Centralized Data Warehouse: A single source of truth for all tax-related data, including taxpayer information, transaction records, and tax filings. This eliminates data silos and ensures consistency.
 
