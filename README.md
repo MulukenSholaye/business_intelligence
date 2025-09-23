@@ -21,7 +21,7 @@ This system is a robust solution designed to streamline tax management and repor
 # Getting Started
 For a new project, start by defining the data schema and sources. Once the data warehouse is established, you can begin building the ETL pipelines and designing the dashboards.
 
-# screenshots
+# Screenshots
 * Login ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2019-01-00.png)
 * signup ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/Screenshot%20from%202025-09-23%2019-01-21.png)
 * landing ![login](https://github.com/MulukenSholaye/business_intelligence/blob/4dcf88e8a3cdb79dc4e4e9bee439030d4cf14f2f/screenshots/landing_chatbot.png)
