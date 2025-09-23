@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New User</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Base styling for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            padding: 1.5rem;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+        /* Card styling for the form container */
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            max-width: 600px; /* Limit width for better form readability */
+            margin: 0 auto; /* Center the card horizontally */
+            width: 100%; /* Ensure it takes full width up to max-width */
+        }
+        /* Styling for form groups (label + input) */
+        .form-group {
+            margin-bottom: 1rem; /* Space between form fields */
+        }
+        /* Styling for form labels */
+        .form-label {
+            display: block; /* Make label take full width */
+            margin-bottom: 0.5rem; /* Space between label and input */
+            font-weight: 500; /* Medium font weight */
+            color: #4a5568; /* Gray-700 */
+        }
+        /* Styling for all form input fields (text, email, password, select) */
+        .form-input {
+            width: 100%; /* Full width within its container */
+            padding: 0.75rem; /* Padding inside the input */
+            border: 1px solid #e2e8f0; /* Light gray border */
+            border-radius: 0.375rem; /* Rounded corners */
+            font-size: 1rem; /* Standard font size */
+            color: #2d3748; /* Dark gray text */
+            transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out; /* Smooth transitions for focus */
+        }
+        .form-input:focus {
+            outline: none; /* Remove default outline */
+            border-color: #6366f1; /* Blue border on focus */
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); /* Subtle blue shadow on focus */
+        }
+        /* Styling for the success button (e.g., Add User) */
+        .btn-success {
+            background-color: #2563eb; /* Blue background for Add User */
+            color: white; /* White text */
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-success:hover {
+            background-color: #1e40af; /* Darker blue on hover */
+            transform: translateY(-1px);
+        }
+        .btn-success:active {
+            transform: translateY(0);
+        }
+        /* Styling for the back button */
+        .btn-back {
+            background-color: #6b7280; /* Gray background */
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-back:hover {
+            background-color: #4b5563; /* Darker gray on hover */
+            transform: translateY(-1px);
+        }
+        .btn-back:active {
+            transform: translateY(0);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 640px) {
+            .card {
+                padding: 1rem; /* Reduce padding on small screens */
+            }
+            .btn-group {
+                flex-direction: column; /* Stack buttons vertically */
+                gap: 0.75rem; /* Space between stacked buttons */
+            }
+            .btn-success, .btn-back {
+                width: 100%; /* Full width buttons */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main heading for the page -->
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center md:text-4xl">Add New User</h1>
+
+    <!-- Card containing the user addition form -->
+    <div class="card">
+        <form onsubmit="event.preventDefault(); handleAddUser();">
+            <!-- Username input group -->
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-input" placeholder="e.g., Genet_Tadesse" required>
+            </div>
+            <!-- Email input group -->
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="e.g., genet.tadesse@mor.et" required>
+            </div>
+            <!-- Password input group -->
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" id="password" name="password" class="form-input" placeholder="Enter password" required>
+            </div>
+            <!-- Role select group -->
+            <div class="form-group">
+                <label for="role" class="form-label">Role</label>
+                <select id="role" name="role" class="form-input" required>
+                    <option value="">Select a role</option>
+                    <option value="administrator">Administrator</option>
+                    <option value="tax_officer">Tax Officer</option>
+                    <option value="auditor">Auditor</option>
+                    <option value="data_analyst">Data Analyst</option>
+                    <option value="guest">Guest</option>
+                </select>
+            </div>
+            <!-- Button group for submitting and navigating back -->
+            <div class="flex space-x-4 mt-6 btn-group">
+                <button type="submit" class="btn-success">
+                    <i class="fas fa-plus-circle mr-2"></i> Add User
+                </button>
+                <button type="button" class="btn-back" onclick="navigateBack()">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to User List
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        /**
+         * Handles the form submission for adding a new user.
+         * In a real application, this would send data to a backend.
+         */
+        function handleAddUser() {
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const role = document.getElementById('role').value;
+
+            // Simple validation
+            if (!username || !email || !role) {
+                showMessageBox('Please fill in all required fields.', 'error');
+                return;
+            }
+
+            // Simulate adding user
+            console.log('Adding user:', { username, email, role });
+            showMessageBox(`User '${username}' added successfully!`, 'success');
+
+            // Optionally, clear the form or navigate back
+            setTimeout(() => {
+                navigateBack();
+            }, 1500); // Navigate back after a short delay
+        }
+
+        /**
+         * Navigates back to the main user management page.
+         */
+        function navigateBack() {
+            if (window.parent && window.parent.document && window.parent.document.getElementById('contentFrame')) {
+                window.parent.document.getElementById('contentFrame').src = 'user-management.html';
+            } else {
+                console.warn("Could not find parent contentFrame. Navigating directly.");
+                window.location.href = 'user-management.html';
+            }
+        }
+
+        /**
+         * Displays a custom message box instead of alert().
+         * @param {string} message The message to display.
+         * @param {string} type 'success' or 'error' for styling.
+         */
+        function showMessageBox(message, type) {
+            let messageBox = document.getElementById('messageBox');
+            if (!messageBox) {
+                messageBox = document.createElement('div');
+                messageBox.id = 'messageBox';
+                messageBox.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    opacity: 0;
+                    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                `;
+                document.body.appendChild(messageBox);
+            }
+
+            messageBox.innerHTML = ''; // Clear previous content
+            const icon = document.createElement('i');
+            const text = document.createElement('span');
+            text.textContent = message;
+
+            if (type === 'success') {
+                messageBox.style.backgroundColor = '#e0e7ff'; /* Light blue for success */
+                messageBox.style.color = '#2563eb'; /* Darker blue text */
+                icon.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                messageBox.style.backgroundColor = '#fee2e2'; // Light red
+                messageBox.style.color = '#991b1b'; // Dark red text
+                icon.className = 'fas fa-times-circle';
+            }
+
+            messageBox.appendChild(icon);
+            messageBox.appendChild(text);
+
+            // Show and then hide
+            messageBox.style.opacity = '1';
+            messageBox.style.transform = 'translateX(-50%) translateY(0)';
+
+            setTimeout(() => {
+                messageBox.style.opacity = '0';
+                messageBox.style.transform = 'translateX(-50%) translateY(-20px)';
+            }, 3000); // Hide after 3 seconds
+        }
+    </script>
+</body>
+</html>
