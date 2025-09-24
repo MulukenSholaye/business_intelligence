@@ -1,6 +1,8 @@
 # Business Intelligence & Data Warehouse System
 
 This system is a robust solution designed to streamline tax management and reporting for financial institutions and government agencies. By consolidating data into a centralized data warehouse, it provides a powerful platform for analysis, monitoring, and strategic decision-making.
+
+
 ![ff](https://github.com/MulukenSholaye/business_intelligence/blob/ec1430ca6d79c16be1744174c7ca8e9799f1c43c/Business-intelligence.jpg)
 
 
