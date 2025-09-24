@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fake Invoice Management Panel</title>
+
+    <!-- Google Font: Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Theme style (AdminLTE) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/css/adminlte.min.css">
+    <!-- Tailwind CSS (for rounded corners and general utility) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .content-wrapper {
+            background-color: #f4f6f9; /* AdminLTE default background */
+        }
+        .card {
+            border-radius: 0.5rem; /* Tailwind rounded-lg */
+            box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2); /* AdminLTE shadow */
+            margin-bottom: 1.5rem; /* Add spacing between stacked cards */
+        }
+        .btn {
+            border-radius: 0.375rem; /* Tailwind rounded-md */
+        }
+        .form-control {
+            border-radius: 0.25rem; /* Tailwind rounded */
+        }
+
+        /* AdminLTE small-box handles styling, ensuring rounded corners */
+        .small-box {
+            border-radius: 0.5rem; /* Apply consistent rounded corners */
+        }
+
+        /* Custom styles for popups */
+        .modal-avatar {
+            font-size: 5rem; /* Large icon for avatar */
+            color: #6c757d; /* Muted gray */
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .modal-body-section {
+            background-color: #f8f9fa; /* Light background for sections */
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e9ecef; /* Light border */
+        }
+
+        .modal-body-section h6 {
+            color: #343a40; /* Darker heading color */
+            margin-bottom: 0.75rem;
+            font-weight: bold;
+            border-bottom: 1px dashed #ced4da; /* Subtle separator */
+            padding-bottom: 0.5rem;
+        }
+
+        .modal-body-section p strong {
+            color: #495057; /* Slightly darker for labels */
+        }
+
+        /* Styles for "Ways of Identifying Fake Invoices" section and new Fake Invoice Types section */
+        .method-card {
+            background-color: #ffffff;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 1px rgba(0,0,0,.125), 0 1px 3px rgba(0,0,0,.2);
+            margin-bottom: 1rem;
+            padding: 1.25rem;
+        }
+        .method-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .method-icon {
+            font-size: 2.5rem;
+            margin-right: 1rem;
+        }
+        .method-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+        }
+        .method-description p {
+            margin-bottom: 0.75rem;
+            color: #495057;
+        }
+        .method-description .badge {
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.8rem;
+            padding: 0.4em 0.7em;
+            border-radius: 0.25rem;
+        }
+        .method-highlight {
+            font-weight: 600; /* Semi-bold for highlighted terms */
+            color: #0056b3; /* Darker blue for emphasis */
+        }
+        .chart-table-row:hover {
+            background-color: #e2e6ea; /* Lighter background on hover */
+            cursor: pointer; /* Indicate clickable row */
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+    <div class="wrapper">
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand-lg navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="javascript:void(0)" class="nav-link">Home</a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0">Fake Invoice Management</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item active">Fake Invoice Management</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.content-header -->
+
+            <!-- Main content -->
+            <section class="content">
+                <div class="container-fluid">
+                    <!-- Overview & Metrics Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <!-- Metric Cards for Overview -->
+                            <div class="row">
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <div class="small-box bg-info">
+                                        <div class="inner">
+                                            <h3>5,678</h3>
+                                            <p>Total Invoices Processed</p>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-file-invoice"></i>
+                                        </div>
+                                        <a href="javascript:void(0)" class="small-box-footer" onclick="showMessageModal('Total Invoices Processed Details', 'Total number of invoices processed by the system for fraud detection within the selected period.');">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <div class="small-box bg-warning">
+                                        <div class="inner">
+                                            <h3>245</h3>
+                                            <p>Invoices Flagged for Review</p>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-flag"></i>
+                                        </div>
+                                        <a href="javascript:void(0)" class="small-box-footer" onclick="showMessageModal('Invoices Flagged for Review Details', 'Number of invoices flagged by the system for potential anomalies or suspicious activity, requiring manual review.');">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <div class="small-box bg-danger">
+                                        <div class="inner">
+                                            <h3>35</h3>
+                                            <p>High-Risk Anomalies</p>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <a href="javascript:void(0)" class="small-box-footer" onclick="showMessageModal('High-Risk Anomalies Details', 'Number of invoices identified with a high probability of being fraudulent, requiring immediate attention and potential audit.');">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-md-6 col-12">
+                                    <div class="small-box bg-success">
+                                        <div class="inner">
+                                            <h3>4.3<sup style="font-size: 20px">%</sup></h3>
+                                            <p>Anomaly Detection Rate</p>
+                                        </div>
+                                        <div class="icon">
+                                            <i class="fas fa-percent"></i>
+                                        </div>
+                                        <a href="javascript:void(0)" class="small-box-footer" onclick="showMessageModal('Anomaly Detection Rate Details', 'The percentage of processed invoices that were successfully identified as having anomalies, indicating the system\'s effectiveness.');">More info <i class="fas fa-arrow-circle-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- End Metric Cards -->
+                        </div>
+                    </div>
+                    <!-- /.Overview & Metrics Section -->
+
+                    <!-- Invoice Data Overview Charts -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card card-primary card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Fake Invoice Type Distribution</h3>
+                                </div>
+                                <div class="card-body" onclick="showChartDetails('Fake Invoice Type Distribution', 'This chart shows the breakdown of identified fake invoice types, helping to pinpoint common fraud patterns and focus preventive measures.', ['Duplicate Invoices', 'Non-existent Vendors', 'Inflated Amounts', 'Service Not Rendered', 'Incorrect Dates/Details'], [60, 40, 30, 25, 10], 'Invoice Type', 'Count');">
+                                    <canvas id="invoiceTypeChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card card-info card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Invoice Risk Level Distribution</h3>
+                                </div>
+                                <div class="card-body" onclick="showChartDetails('Invoice Risk Level Distribution', 'This chart illustrates the distribution of all processed invoices by their assigned risk level (High, Medium, Low), allowing for risk-based prioritization of reviews.', ['High Risk', 'Medium Risk', 'Low Risk'], [35, 80, 130], 'Risk Level', 'Count');">
+                                    <canvas id="invoiceRiskChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ways of Identifying Fake Invoices Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-dark card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Methods for Identifying Fake Invoices</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p>Identifying fraudulent invoices requires a multi-faceted approach, combining data analysis with specific investigative techniques. Here are key methods employed:</p>
+
+                                    <!-- Method 1: Data Discrepancy Analysis -->
+                                    <div class="method-card" onclick="showFlaggedInvoicesForMethod('Data Discrepancy Analysis')">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-exchange-alt method-icon text-primary"></i>
+                                            <h4 class="method-title text-primary">Data Discrepancy Analysis</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Comparing invoice data against internal records and expected patterns to find inconsistencies.
+                                            </p>
+                                            <p>
+                                                <span class="badge bg-primary">Vendor Mismatch</span>
+                                                <span class="badge bg-info">Amount Discrepancy</span>
+                                                <span class="badge bg-secondary">Duplicate Entries</span>
+                                                <span class="badge bg-success">Incorrect Dates/POs</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Method 2: Vendor Behavior Analysis -->
+                                    <div class="method-card" onclick="showFlaggedInvoicesForMethod('Vendor Behavior Analysis')">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-store-alt method-icon text-success"></i>
+                                            <h4 class="method-title text-success">Vendor Behavior Analysis</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Monitoring vendor activity for unusual or suspicious patterns that may indicate fraud.
+                                            </p>
+                                            <p>
+                                                <span class="badge bg-success">New Vendor Alerts</span>
+                                                <span class="badge bg-primary">Unusual Vendor Activity</span>
+                                                <span class="badge bg-info">Vendor Reputation Score</span>
+                                                <span class="badge bg-warning">Frequent Vendor Changes</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Method 3: Transaction Pattern Analysis -->
+                                    <div class="method-card" onclick="showFlaggedInvoicesForMethod('Transaction Pattern Analysis')">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-chart-area method-icon text-warning"></i>
+                                            <h4 class="method-title text-warning">Transaction Pattern Analysis</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Identifying irregular patterns in payment amounts, frequency, and sequences.
+                                            </p>
+                                            <p>
+                                                <span class="badge bg-warning">Frequent Small Amounts</span>
+                                                <span class="badge bg-info">Unusual Payment Timing</span>
+                                                <span class="badge bg-secondary">Sequential Invoice Numbers</span>
+                                                <span class="badge bg-danger">Round Sum Invoices</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Method 4: Document Feature Analysis -->
+                                    <div class="method-card" onclick="showFlaggedInvoicesForMethod('Document Feature Analysis')">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-file-invoice method-icon text-danger"></i>
+                                            <h4 class="method-title text-danger">Document Feature Analysis</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Examining the physical or digital characteristics of an invoice for signs of tampering or fabrication.
+                                            </p>
+                                            <p>
+                                                <span class="badge bg-danger">Missing Information</span>
+                                                <span class="badge bg-primary">Unusual Formatting/Logos</span>
+                                                <span class="badge bg-info">Scanned vs. Digital Origin</span>
+                                                <span class="badge bg-secondary">Generic Details</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Method 5: AI/ML Anomaly Detection -->
+                                    <div class="method-card" onclick="showFlaggedInvoicesForMethod('AI/ML Anomaly Detection')">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-robot method-icon text-purple"></i>
+                                            <h4 class="method-title text-purple">AI/ML Anomaly Detection</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Leveraging machine learning algorithms to identify complex, non-obvious patterns of fraud in large datasets.
+                                            </p>
+                                            <p>
+                                                <span class="badge bg-info">Predictive Scoring</span>
+                                                <span class="badge bg-primary">Behavioral Clustering</span>
+                                                <span class="badge bg-success">Adaptive Learning</span>
+                                                <span class="badge bg-warning">Real-time Flagging</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <p class="mt-3 text-muted">These methods combine to create a robust system for detecting, monitoring, and reporting fake invoices, protecting tax revenues and ensuring compliance.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.Ways of Identifying Fake Invoices Section -->
+
+                    <!-- Invoice Analysis Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-secondary card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Invoice Drill-Down Analysis</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-4">Enter an Invoice ID for a detailed analysis, including anomaly indicators, vendor risk, and AI/ML scoring.</p>
+                                    <form onsubmit="event.preventDefault(); performInvoiceAnalysis($('#invoiceIdInput').val(), $('#vendorNameInput').val());">
+                                        <div class="form-group">
+                                            <label for="invoiceIdInput">Invoice ID</label>
+                                            <input type="text" class="form-control rounded-md" id="invoiceIdInput" placeholder="e.g., INV-001, INV-2023-456" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="vendorNameInput">Vendor Name (Optional)</label>
+                                            <input type="text" class="form-control rounded-md" id="vendorNameInput" placeholder="e.g., ABC Corp, John Doe Supplies">
+                                            <small class="form-text text-muted">Providing a vendor name can help refine the analysis.</small>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary rounded-md">
+                                            <i class="fas fa-search mr-1"></i> Analyze Invoice
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.Invoice Analysis Section -->
+
+                    <!-- Flagged Invoice Leads Table -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-warning card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Flagged Invoice Leads</h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Invoice ID</th>
+                                                <th>Vendor</th>
+                                                <th>Amount</th>
+                                                <th>Risk Score</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>INV-001</td>
+                                                <td>John Doe Supplies</td>
+                                                <td>$12,500</td>
+                                                <td><span class="badge bg-danger">95% (High)</span></td>
+                                                <td>Flagged for Audit</td>
+                                                <td>
+                                                    <button class="btn btn-info btn-sm rounded-md" onclick="showInvoiceDetails('INV-001', 'John Doe Supplies', '$12,500', '2023-10-26', 'Duplicate Entry, Unregistered Vendor', 'High Risk (New/Unverified Vendor)', 'Frequent transactions from a newly registered vendor without prior history.', '<h3>Analysis Report for INV-001: John Doe Supplies</h3><p><strong>Anomaly Type:</strong> Possible duplicate entry and unregistered vendor.</p><p><strong>Risk Assessment:</strong> High. This vendor appears to be new, and multiple invoices for similar services have been submitted within a short period, indicating potential fraud. The vendor is not found in official tax registries.</p><p><strong>Recommended Action:</strong> Immediate audit and suspension of payment for this invoice. Investigate vendor registration and business legitimacy. Cross-check with other flagged invoices for a pattern.</p>');"><i class="fas fa-eye"></i> View</button>
+                                                    <button class="btn btn-success btn-sm ml-1 rounded-md" onclick="showMessageModal('Invoice Validated', 'Invoice INV-001 marked as valid and cleared.');"><i class="fas fa-check"></i> Valid</button>
+                                                    <button class="btn btn-danger btn-sm ml-1 rounded-md" onclick="showMessageModal('Invoice Flagged', 'Invoice INV-001 flagged for deeper investigation.');"><i class="fas fa-times"></i> Audit</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INV-002</td>
+                                                <td>QuickFix Services</td>
+                                                <td>$3,200</td>
+                                                <td><span class="badge bg-warning">78% (Medium)</span></td>
+                                                <td>Under Review</td>
+                                                <td>
+                                                    <button class="btn btn-info btn-sm rounded-md" onclick="showInvoiceDetails('INV-002', 'QuickFix Services', '$3,200', '2023-11-01', 'Unusual Service Description, Round Amount', 'Medium Risk (Limited History)', 'Invoice includes a vague service description ("General Repairs") and an exact round amount. Vendor has limited past transaction history.', '<h3>Analysis Report for INV-002: QuickFix Services</h3><p><strong>Anomaly Type:</strong> Unusual service description and round amount.</p><p><strong>Risk Assessment:</strong> Medium. The vagueness of the service and the precise round figure raise a red flag. While not definitively fraudulent, it warrants closer inspection.</p><p><strong>Recommended Action:</strong> Request detailed breakdown of services rendered. Contact department responsible for service approval to verify work completion. Monitor future invoices from this vendor.</p>');"><i class="fas fa-eye"></i> View</button>
+                                                    <button class="btn btn-success btn-sm ml-1 rounded-md" onclick="showMessageModal('Invoice Validated', 'Invoice INV-002 marked as valid and cleared.');"><i class="fas fa-check"></i> Valid</button>
+                                                    <button class="btn btn-danger btn-sm ml-1 rounded-md" onclick="showMessageModal('Invoice Flagged', 'Invoice INV-002 flagged for deeper investigation.');"><i class="fas fa-times"></i> Audit</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>INV-003</td>
+                                                <td>Local Biz Solutions</td>
+                                                <td>$800</td>
+                                                <td><span class="badge bg-info">45% (Low)</span></td>
+                                                <td>Cleared</td>
+                                                <td>
+                                                    <button class="btn btn-info btn-sm rounded-md" onclick="showInvoiceDetails('INV-003', 'Local Biz Solutions', '$800', '2023-10-15', 'None', 'Low Risk (Established Vendor)', 'Invoice from an established vendor. No significant anomalies detected. Standard service and amount.', '<h3>Analysis Report for INV-003: Local Biz Solutions</h3><p><strong>Anomaly Type:</strong> None detected.</p><p><strong>Risk Assessment:</strong> Low. This invoice is from a well-known, established vendor with consistent transaction history. The service and amount are within expected parameters.</p><p><strong>Recommended Action:</strong> No further action required. Process for payment.</p>');"><i class="fas fa-eye"></i> View</button>
+                                                    <button class="btn btn-success btn-sm ml-1 rounded-md" onclick="showMessageModal('Invoice Validated', 'Invoice INV-003 marked as valid and cleared.');"><i class="fas fa-check"></i> Valid</button>
+                                                    <button class="btn btn-danger btn-sm ml-1 rounded-md" onclick="showMessageModal('Invoice Flagged', 'Invoice INV-003 flagged for deeper investigation.');"><i class="fas fa-times"></i> Audit</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="card-footer clearfix">
+                                    <ul class="pagination pagination-sm m-0 float-right">
+                                        <li class="page-item"><a class="page-link" href="#">«</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">»</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.Flagged Invoice Leads Table -->
+
+                    <!-- Fake Invoice Types Detailed Section -->
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card card-dark card-outline">
+                                <div class="card-header">
+                                    <h3 class="card-title">Detailed Fake Invoice Types and Characteristics</h3>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-4">Understanding the different types of fake invoices and their common characteristics is crucial for effective fraud detection.</p>
+
+                                    <!-- Fake Invoice Type: Duplicate Invoices -->
+                                    <div class="method-card">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-copy method-icon text-danger"></i>
+                                            <h4 class="method-title text-danger">Duplicate Invoices</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                These are invoices submitted multiple times for the same goods or services. This can be accidental but is often a deliberate attempt to illicitly receive payment more than once.
+                                            </p>
+                                            <p><strong>Characteristics:</strong>
+                                                <span class="badge bg-danger">Same Invoice Number (or very similar)</span>
+                                                <span class="badge bg-danger">Identical Amount and Date</span>
+                                                <span class="badge bg-danger">Same Vendor and Description</span>
+                                                <span class="badge bg-info">Slight variations in invoice number or date to evade detection</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fake Invoice Type: Non-existent Vendors -->
+                                    <div class="method-card">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-user-slash method-icon text-warning"></i>
+                                            <h4 class="method-title text-warning">Non-existent (Ghost) Vendors</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Invoices created for goods or services supposedly supplied by a vendor that does not actually exist, or is not legitimate. Often used to siphon funds directly.
+                                            </p>
+                                            <p><strong>Characteristics:</strong>
+                                                <span class="badge bg-warning">Unregistered Business Name/Tax ID</span>
+                                                <span class="badge bg-warning">Generic Address (P.O. Box, residential)</span>
+                                                <span class="badge bg-warning">No Online Presence or Contact Info</span>
+                                                <span class="badge bg-info">Bank Account not matching vendor name</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fake Invoice Type: Inflated Amounts -->
+                                    <div class="method-card">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-sort-amount-up method-icon text-info"></i>
+                                            <h4 class="method-title text-info">Inflated Amounts</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Legitimate invoices where the cost of goods or services has been artificially increased. This typically involves collusion or exploitation of weak oversight.
+                                            </p>
+                                            <p><strong>Characteristics:</strong>
+                                                <span class="badge bg-info">Higher than Market Rate for Services/Goods</span>
+                                                <span class="badge bg-info">Unjustified "Rush" or "Expedited" Fees</span>
+                                                <span class="badge bg-info">Rounding up of figures without justification</span>
+                                                <span class="badge bg-warning">No detailed breakdown of costs</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fake Invoice Type: Services Not Rendered -->
+                                    <div class="method-card">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-ban method-icon text-primary"></i>
+                                            <h4 class="method-title text-primary">Services/Goods Not Rendered</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Invoices for goods or services that were never actually provided or delivered. This is a direct attempt to defraud the entity.
+                                            </p>
+                                            <p><strong>Characteristics:</strong>
+                                                <span class="badge bg-primary">No Corresponding Delivery Receipt/Proof of Service</span>
+                                                <span class="badge bg-primary">Lack of Internal Request/Approval</span>
+                                                <span class="badge bg-primary">Discrepancy with Inventory Records (for goods)</span>
+                                                <span class="badge bg-warning">Vendor reputation issues</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Fake Invoice Type: Incorrect Dates/Details -->
+                                    <div class="method-card">
+                                        <div class="method-card-header">
+                                            <i class="fas fa-calendar-times method-icon text-secondary"></i>
+                                            <h4 class="method-title text-secondary">Incorrect Dates/Details</h4>
+                                        </div>
+                                        <div class="method-description">
+                                            <p>
+                                                Invoices with altered dates, incorrect purchase order numbers, or other factual inaccuracies designed to bypass validation checks or hide older, already paid invoices.
+                                            </p>
+                                            <p><strong>Characteristics:</strong>
+                                                <span class="badge bg-secondary">Invoice Date outside Procurement Period</span>
+                                                <span class="badge bg-secondary">Mismatched Purchase Order Numbers</span>
+                                                <span class="badge bg-secondary">Unusual Invoice Sequencing</span>
+                                                <span class="badge bg-info">Misspellings or grammatical errors</span>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <p class="mt-3 text-muted">A comprehensive understanding of these fake invoice types aids in the development and refinement of fraud detection mechanisms.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.Fake Invoice Types Detailed Section -->
+
+                </div>
+            </section>
+            <!-- /.content -->
+        </div>
+        <!-- /.content-wrapper -->
+
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2025 <a href="javascript:void(0)">Tax Admin Solutions</a>.</strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.0
+            </div>
+        </footer>
+        <!-- /.main-footer -->
+
+        <!-- Generic Info/Confirmation Message Modal -->
+        <div class="modal fade" id="infoMessageModal" tabindex="-1" role="dialog" aria-labelledby="infoMessageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content rounded-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="infoMessageModalLabel">Message</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body" id="infoMessageModalBody">
+                        <!-- Message content will be inserted here by JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded-md" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Details Modal (Replaced Lead Details Modal) -->
+        <div class="modal fade" id="invoiceDetailsModal" tabindex="-1" role="dialog" aria-labelledby="invoiceDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content rounded-lg">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="invoiceDetailsModalLabel">Invoice Details</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <i id="detailInvoiceIcon" class="modal-avatar fas fa-file-invoice" style="color: #007bff;"></i>
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Invoice Information:</h6>
+                            <p><strong>Invoice ID:</strong> <span id="detailInvoiceId"></span></p>
+                            <p><strong>Vendor:</strong> <span id="detailInvoiceVendor"></span></p>
+                            <p><strong>Amount:</strong> <span id="detailInvoiceAmount"></span></p>
+                            <p><strong>Date:</strong> <span id="detailInvoiceDate"></span></p>
+                            <p><strong>Risk Score:</strong> <span id="detailInvoiceRiskScore" class="badge"></span></p>
+                            <p><strong>Status:</strong> <span id="detailInvoiceStatus" class="badge"></span></p>
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Anomaly Indicators:</h6>
+                            <p id="detailAnomalyIndicators"></p>
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Vendor Risk Assessment:</h6>
+                            <p id="detailVendorRisk"></p>
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Transaction History Anomalies:</h6>
+                            <p id="detailTransactionAnomalies"></p>
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Detailed Analysis Report:</h6>
+                            <div id="detailAnalysisReport"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded-md" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Invoice Analysis Modal (Renamed and Adapted for Invoice Analysis) -->
+        <div class="modal fade" id="invoiceAnalysisModal" tabindex="-1" role="dialog" aria-labelledby="invoiceAnalysisModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content rounded-lg">
+                    <div class="modal-header bg-secondary">
+                        <h5 class="modal-title text-white" id="invoiceAnalysisModalLabel">Invoice Analysis Results for <span id="iaInvoiceIdDisplay"></span></h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-chart-pie modal-avatar" style="color: #6c757d;"></i> <!-- Gray/Secondary icon -->
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Basic Invoice Details:</h6>
+                            <p><strong>Invoice ID:</strong> <span id="iaInvoiceId"></span></p>
+                            <p><strong>Vendor Name:</strong> <span id="iaVendorName"></span></p>
+                            <p><strong>Amount:</strong> <span id="iaAmount"></span></p>
+                            <p><strong>Date:</strong> <span id="iaDate"></span></p>
+                        </div>
+
+                        <div class="modal-body-section">
+                            <h6>Anomaly Indicators:</h6>
+                            <p id="iaAnomalyIndicators"></p>
+                        </div>
+
+                        <div class="modal-body-section">
+                            <h6>Vendor Risk Assessment:</h6>
+                            <p id="iaVendorRisk"></p>
+                        </div>
+
+                        <div class="modal-body-section">
+                            <h6>Transaction History Anomalies:</h6>
+                            <p id="iaTransactionAnomalies"></p>
+                        </div>
+
+                        <div class="modal-body-section">
+                            <h6>AI/ML Anomaly Score:</h6>
+                            <p><span id="iaMlScore" class="badge"></span></p>
+                        </div>
+
+                        <div class="modal-body-section">
+                            <h6>Recommended Action:</h6>
+                            <div id="iaRecommendedAction"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded-md" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-danger rounded-md" onclick="showMessageModal('Invoice Flagged', 'Invoice ' + $('#iaInvoiceId').text() + ' flagged for audit based on analysis.'); $('#invoiceAnalysisModal').modal('hide');"><i class="fas fa-times-circle mr-1"></i> Flag for Audit</button>
+                        <button type="button" class="btn btn-success rounded-md" onclick="showMessageModal('Invoice Validated', 'Invoice ' + $('#iaInvoiceId').text() + ' marked as valid.'); $('#invoiceAnalysisModal').modal('hide');"><i class="fas fa-check-circle mr-1"></i> Mark Valid</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart Details Modal -->
+        <div class="modal fade" id="chartDetailsModal" tabindex="-1" role="dialog" aria-labelledby="chartDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content rounded-lg">
+                    <div class="modal-header bg-info">
+                        <h5 class="modal-title text-white" id="chartDetailsModalLabel">Chart Details</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-chart-bar modal-avatar" style="color: #17a2b8;"></i> <!-- Info color icon -->
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Chart Overview:</h6>
+                            <p><strong>Title:</strong> <span id="chartDetailTitle"></span></p>
+                            <p><strong>Description:</strong> <span id="chartDetailDescription"></span></p>
+                        </div>
+                        <div class="modal-body-section">
+                            <h6>Data Breakdown:</h6>
+                            <table class="table table-bordered table-sm">
+                                <thead class="thead-light">
+                                    <tr id="chartDetailTableHeaders">
+                                        <!-- Headers will be dynamically inserted here -->
+                                    </tr>
+                                </thead>
+                                <tbody id="chartDetailTableBody">
+                                    <!-- Chart data will be inserted here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary rounded-md" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- ./wrapper -->
+
+    <!-- jQuery -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!-- Bootstrap 4 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.1/dist/js/adminlte.min.js"></script>
+    <!-- ChartJS (for charts) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+
+    <script>
+        /**
+         * Sample data for drill-down into specific invoice types/risk levels and method-flagged invoices.
+         * This data is hardcoded for demonstration purposes. In a real application,
+         * this would be fetched from a database or an API.
+         */
+        const allInvoiceDetails = {
+            'INV-001': {
+                invoiceId: 'INV-001', vendor: 'John Doe Supplies', amount: '$12,500', date: '2023-10-26',
+                anomalyIndicators: 'Duplicate Entry, Unregistered Vendor, High Amount',
+                vendorRisk: 'High Risk (New/Unverified Vendor)',
+                transactionAnomalies: 'Frequent transactions from a newly registered vendor without prior history. Invoice amount significantly higher than average for similar services.',
+                analysisReport: '<h3>Analysis Report for INV-001: John Doe Supplies</h3><p><strong>Anomaly Type:</strong> Possible duplicate entry and unregistered vendor.</p><p><strong>Risk Assessment:</strong> High. This vendor appears to be new, and multiple invoices for similar services have been submitted within a short period, indicating potential fraud. The vendor is not found in official tax registries.</p><p><strong>Recommended Action:</strong> Immediate audit and suspension of payment for this invoice. Investigate vendor registration and business legitimacy. Cross-check with other flagged invoices for a pattern.</p>'
+            },
+            'INV-002': {
+                invoiceId: 'INV-002', vendor: 'QuickFix Services', amount: '$3,200', date: '2023-11-01',
+                anomalyIndicators: 'Unusual Service Description, Round Amount',
+                vendorRisk: 'Medium Risk (Limited History)',
+                transactionAnomalies: 'Invoice includes a vague service description ("General Repairs") and an exact round amount. Vendor has limited past transaction history.',
+                analysisReport: '<h3>Analysis Report for INV-002: QuickFix Services</h3><p><strong>Anomaly Type:</strong> Unusual service description and round amount.</p><p><strong>Risk Assessment:</strong> Medium. The vagueness of the service and the precise round figure raise a red flag. While not definitively fraudulent, it warrants closer inspection.</p><p><strong>Recommended Action:</strong> Request detailed breakdown of services rendered. Contact department responsible for service approval to verify work completion. Monitor future invoices from this vendor.</p>'
+            },
+            'INV-003': {
+                invoiceId: 'INV-003', vendor: 'Local Biz Solutions', amount: '$800', date: '2023-10-15',
+                anomalyIndicators: 'None',
+                vendorRisk: 'Low Risk (Established Vendor)',
+                transactionAnomalies: 'No significant anomalies detected. Standard service and amount.',
+                analysisReport: '<h3>Analysis Report for INV-003: Local Biz Solutions</h3><p><strong>Anomaly Type:</strong> None detected.</p><p><strong>Risk Assessment:</strong> Low. This invoice is from a well-known, established vendor with consistent transaction history. The service and amount are within expected parameters.</p><p><strong>Recommended Action:</strong> No further action required. Process for payment.</p>'
+            },
+            'INV-DUP-001': {
+                invoiceId: 'INV-DUP-001', vendor: 'Phantom Supplies Co.', amount: '$1,500', date: '2023-09-10',
+                anomalyIndicators: 'Identical invoice number, amount, and date; submitted twice within 24 hours.',
+                vendorRisk: 'High Risk (New/Unverified Vendor, Suspected Fraud)',
+                transactionAnomalies: 'Two identical transactions recorded for the same invoice ID.',
+                analysisReport: '<h3>Analysis Report for INV-DUP-001: Duplicate Invoice</h3><p>This invoice was identified as a duplicate based on matching invoice number, amount, vendor, and date with a previously paid invoice. Further investigation is required to determine if this was accidental or a deliberate attempt at fraud. The vendor is also flagged as new with no established history.</p><p class="text-danger font-weight-bold">Recommended Action: Suspend payment immediately. Contact the vendor for clarification and initiate an internal audit. Consider adding this vendor to a watchlist.</p>'
+            },
+            'INV-GHOST-001': {
+                invoiceId: 'INV-GHOST-001', vendor: 'Ghostly Solutions Inc.', amount: '$7,800', date: '2023-10-05',
+                anomalyIndicators: 'Vendor not found in official registries; generic contact information (P.O. Box); no verifiable online presence.',
+                vendorRisk: 'Critical Risk (Non-existent Entity, High Fraud Probability)',
+                transactionAnomalies: 'First and only transaction from this vendor. Unusually high amount for a new vendor and service.',
+                analysisReport: '<h3>Analysis Report for INV-GHOST-001: Non-existent Vendor</h3><p>This invoice is from a vendor that could not be verified through any official business registries or public databases. The provided address is a P.O. Box, and there is no legitimate contact information. This strongly suggests a "ghost vendor" scheme.</p><p class="text-danger font-weight-bold">Recommended Action: Immediately flag for criminal investigation. Block all future payments to this vendor and associated accounts. Attempt to recover funds if payment has already been made.</p>'
+            },
+            'INV-INF-001': {
+                invoiceId: 'INV-INF-001', vendor: 'Prime IT Services', amount: '$25,000', date: '2023-11-15',
+                anomalyIndicators: 'Amount significantly higher than market rate for comparable services; "expedited fee" without clear justification.',
+                vendorRisk: 'Medium Risk (Established Vendor, Pricing Anomaly)',
+                transactionAnomalies: 'Previous invoices from this vendor were within normal price ranges. This invoice shows a sudden, unexplained jump in cost.',
+                analysisReport: '<h3>Analysis Report for INV-INF-001: Inflated Amount</h3><p>While the vendor "Prime IT Services" is legitimate and established, the invoiced amount of $25,000 for "Software Upgrade Consultation" is substantially higher than the typical market rates for similar services. An additional "expedited fee" of $5,000 lacks a clear justification or prior approval.</p><p class="text-warning font-weight-bold">Recommended Action: Initiate a price comparison review. Request detailed breakdown of services and justification for the inflated amount. Investigate for potential collusion or internal policy violation.</p>'
+            },
+            'INV-NO-SVC-001': {
+                invoiceId: 'INV-NO-SVC-001', vendor: 'CleanSweep Solutions', amount: '$800', date: '2023-09-20',
+                anomalyIndicators: 'No corresponding internal request or proof of service completion; department denies receiving service.',
+                vendorRisk: 'High Risk (Disputed Service, Potential Fraud)',
+                transactionAnomalies: 'No prior history of this specific service from this vendor. Discrepancy between invoice claim and internal verification.',
+                analysisReport: '<h3>Analysis Report for INV-NO-SVC-001: Service Not Rendered</h3><p>This invoice from "CleanSweep Solutions" claims services for "Office Deep Cleaning" were provided, but the relevant department confirms no such service was requested or received. There is no internal documentation or sign-off for this work.</p><p class="text-danger font-weight-bold">Recommended Action: Reject the invoice. Investigate the origin of the invoice and who authorized its submission. Consider contacting the vendor to address the discrepancy and potential fraudulent billing.</p>'
+            },
+            'INV-DATE-001': {
+                invoiceId: 'INV-DATE-001', vendor: 'OfficeTech Supplies', amount: '$500', date: '2022-01-10',
+                anomalyIndicators: 'Invoice date is significantly outside the current fiscal period; purchase order (PO) number mismatch.',
+                vendorRisk: 'Low Risk (Established Vendor, Data Entry Error/Attempt to Resubmit Old Invoice)',
+                transactionAnomalies: 'Invoice appears to be a resubmission of an older, potentially already paid invoice from a previous fiscal year, with an altered date and incorrect PO.',
+                analysisReport: '<h3>Analysis Report for INV-DATE-001: Incorrect Dates/Details</h3><p>This invoice from "OfficeTech Supplies" has an invoice date of 2022-01-10, which falls outside the current processing fiscal year. Additionally, the Purchase Order (PO) number listed on the invoice does not match any active POs for this vendor. This could be a data entry error or an attempt to resubmit an already paid invoice.</p><p class="text-warning font-weight-bold">Recommended Action: Reject the invoice for incorrect details. Contact the vendor for correction and verify if the service/goods were indeed delivered and paid for previously. Reinforce internal invoice submission policies.</p>'
+            },
+            'INV-RISK-HIGH-001': {
+                invoiceId: 'INV-RISK-HIGH-001', vendor: 'Global Innovations Ltd.', amount: '$18,000', date: '2023-11-20',
+                anomalyIndicators: 'New vendor, high amount, generic description ("Consulting Services"), round sum amount.',
+                vendorRisk: 'High Risk (Multiple Red Flags, Potential Shell Company)',
+                transactionAnomalies: 'First transaction with this entity. Multiple combined red flags suggest high fraud potential.',
+                analysisReport: '<h3>Analysis Report for INV-RISK-HIGH-001: High Risk Invoice</h3><p>This invoice from "Global Innovations Ltd." is highly suspicious due to a combination of factors: it is from a brand new vendor with no established history, the invoiced amount is substantial and a perfect round figure, and the service description is extremely vague. These are classic indicators of a shell company or direct fraud attempt.</p><p class="text-danger font-weight-bold">Recommended Action: IMMEDIATE FREEZE on payment. Initiate a comprehensive fraud investigation. Attempt to verify vendor existence and legitimacy through multiple external sources. Alert relevant authorities.</p>'
+            },
+            'INV-RISK-MED-001': {
+                invoiceId: 'INV-RISK-MED-001', vendor: 'Tech Solutions Partners', amount: '$4,500', date: '2023-11-05',
+                anomalyIndicators: 'Slight amount discrepancy (10% higher than quote), unusual payment terms.',
+                vendorRisk: 'Medium Risk (Established Vendor, Minor Discrepancy)',
+                transactionAnomalies: 'The final invoice amount differs slightly from the initial quote by 10% without clear explanation. Payment terms are also unusual for this vendor.',
+                analysisReport: '<h3>Analysis Report for INV-RISK-MED-001: Medium Risk Invoice</h3><p>This invoice from "Tech Solutions Partners" exhibits a medium risk due to a 10% discrepancy in the final amount compared to the agreed-upon quote, lacking clear explanation. Additionally, the payment terms deviate from standard agreements with this vendor. While not necessarily fraudulent, these inconsistencies warrant closer inspection.</p><p class="text-warning font-weight-bold">Recommended Action: Seek immediate clarification from the vendor regarding the amount discrepancy and payment terms. Verify service completion and quality with the requesting department. If discrepancies persist, consider holding payment until resolved.</p>'
+            },
+            'INV-RISK-LOW-001': {
+                invoiceId: 'INV-RISK-LOW-001', vendor: 'Standard Office Supplies', amount: '$250', date: '2023-11-10',
+                anomalyIndicators: 'None detected',
+                vendorRisk: 'Low Risk (Established Vendor, Consistent History)',
+                transactionAnomalies: 'Invoice aligns with typical volume and frequency for this vendor. No suspicious patterns identified.',
+                analysisReport: '<h3>Analysis Report for INV-RISK-LOW-001: Low Risk Invoice</h3><p>This invoice from "Standard Office Supplies" shows no significant anomalies. The vendor is well-established, and the amount and nature of the purchase are consistent with historical patterns. All details match internal records.</p><p class="text-success font-weight-bold">Recommended Action: Approve for payment without further review.</p>'
+            }
+        };
+
+        const flaggedInvoicesByMethod = {
+            'Data Discrepancy Analysis': [
+                { invoiceId: 'INV-001', vendor: 'John Doe Supplies', amount: '$12,500', riskScore: 'High' },
+                { invoiceId: 'INV-DUP-001', vendor: 'Phantom Supplies Co.', amount: '$1,500', riskScore: 'High' },
+                { invoiceId: 'INV-DATE-001', vendor: 'OfficeTech Supplies', amount: '$500', riskScore: 'Low' }
+            ],
+            'Vendor Behavior Analysis': [
+                { invoiceId: 'INV-001', vendor: 'John Doe Supplies', amount: '$12,500', riskScore: 'High' },
+                { invoiceId: 'INV-GHOST-001', vendor: 'Ghostly Solutions Inc.', amount: '$7,800', riskScore: 'Critical' },
+                { invoiceId: 'INV-NO-SVC-001', vendor: 'CleanSweep Solutions', amount: '$800', riskScore: 'High' }
+            ],
+            'Transaction Pattern Analysis': [
+                { invoiceId: 'INV-002', vendor: 'QuickFix Services', amount: '$3,200', riskScore: 'Medium' },
+                { invoiceId: 'INV-INF-001', vendor: 'Prime IT Services', amount: '$25,000', riskScore: 'Medium' },
+                { invoiceId: 'INV-RISK-HIGH-001', vendor: 'Global Innovations Ltd.', amount: '$18,000', riskScore: 'High' }
+            ],
+            'Document Feature Analysis': [
+                { invoiceId: 'INV-DATE-001', vendor: 'OfficeTech Supplies', amount: '$500', riskScore: 'Low' },
+                { invoiceId: 'INV-002', vendor: 'QuickFix Services', amount: '$3,200', riskScore: 'Medium' }
+            ],
+            'AI/ML Anomaly Detection': [
+                { invoiceId: 'INV-RISK-HIGH-001', vendor: 'Global Innovations Ltd.', amount: '$18,000', riskScore: 'High' },
+                { invoiceId: 'INV-001', vendor: 'John Doe Supplies', amount: '$12,500', riskScore: 'High' },
+                { invoiceId: 'INV-RISK-MED-001', vendor: 'Tech Solutions Partners', amount: '$4,500', riskScore: 'Medium' }
+            ]
+        };
+
+        /**
+         * Function to handle drill-down from chart details table row click.
+         * Retrieves simulated invoice data and displays it in the invoice details modal.
+         * @param {string} typeLabel - The label of the chart segment (e.g., 'Duplicate Invoices', 'High Risk').
+         */
+        function drillDownFromChart(typeLabel) {
+            const invoiceData = allInvoiceDetails[typeLabel]; // Changed to use allInvoiceDetails
+            if (invoiceData) {
+                // Close the chart details modal first
+                $('#chartDetailsModal').modal('hide');
+                // Then open the invoice details modal with the simulated data
+                showInvoiceDetails(
+                    invoiceData.invoiceId,
+                    invoiceData.vendor,
+                    invoiceData.amount,
+                    invoiceData.date,
+                    invoiceData.anomalyIndicators,
+                    invoiceData.vendorRisk,
+                    invoiceData.transactionAnomalies,
+                    invoiceData.analysisReport
+                );
+            } else {
+                showMessageModal('No Details Available', 'No specific drill-down data available for this category yet. Please try another category.');
+            }
+        }
+
+        /**
+         * Shows a generic information or confirmation modal.
+         * @param {string} title - The title for the modal.
+         * @param {string} message - The main message to display in the modal.
+         * @param {Array<Object>} [actions] - Optional array of buttons to add to the modal footer.
+         * Each object should have { label: string, callback: function, class: string }
+         */
+        function showMessageModal(title, message, actions = []) {
+            $('#infoMessageModalLabel').text(title);
+            $('#infoMessageModalBody').html(message);
+
+            const $modalFooter = $('#infoMessageModal .modal-footer');
+            $modalFooter.empty(); // Clear existing buttons
+
+            // Add a default close button
+            $modalFooter.append('<button type="button" class="btn btn-secondary rounded-md" data-dismiss="modal">Close</button>');
+
+            // Add custom action buttons
+            actions.forEach(action => {
+                const button = $('<button></button>')
+                    .addClass(`btn ${action.class} rounded-md ml-1`)
+                    .html(action.label); // Use .html() to render icons correctly
+                if (action.callback) {
+                    button.on('click', action.callback);
+                }
+                $modalFooter.append(button);
+            });
+
+            $('#infoMessageModal').modal('show');
+        }
+
+        /**
+         * Shows a detailed popup for a specific invoice.
+         * @param {string} invoiceId - Invoice ID.
+         * @param {string} vendor - Vendor Name.
+         * @param {string} amount - Invoice Amount.
+         * @param {string} date - Invoice Date.
+         * @param {string} anomalyIndicators - Comma-separated list of anomalies.
+         * @param {string} vendorRisk - Vendor risk assessment.
+         * @param {string} transactionAnomalies - Transaction anomalies description.
+         * @param {string} analysisReport - Detailed Analysis Report content (HTML string).
+         */
+        function showInvoiceDetails(invoiceId, vendor, amount, date, anomalyIndicators, vendorRisk, transactionAnomalies, analysisReport) {
+            $('#detailInvoiceId').text(invoiceId);
+            $('#detailInvoiceVendor').text(vendor);
+            $('#detailInvoiceAmount').text(amount);
+            $('#detailInvoiceDate').text(date);
+
+            // Simulate risk score for display based on anomalyIndicators
+            let riskScoreValue;
+            let statusText = 'Not Reviewed';
+            let statusClass = 'secondary'; // Default
+
+            if (anomalyIndicators.includes('Duplicate') || anomalyIndicators.includes('Unregistered Vendor') || anomalyIndicators.includes('Critical Risk')) {
+                riskScoreValue = '95% (High)';
+                statusText = 'Flagged for Audit';
+                statusClass = 'danger';
+            } else if (anomalyIndicators.includes('Unusual') || anomalyIndicators.includes('Round Amount') || anomalyIndicators.includes('Medium Risk')) {
+                riskScoreValue = '78% (Medium)';
+                statusText = 'Under Review';
+                statusClass = 'warning';
+            } else {
+                riskScoreValue = '45% (Low)';
+                statusText = 'Cleared';
+                statusClass = 'success';
+            }
+            $('#detailInvoiceRiskScore').text(riskScoreValue).removeClass().addClass('badge bg-' + statusClass);
+            $('#detailInvoiceStatus').text(statusText).removeClass().addClass('badge bg-' + statusClass);
+            
+
+            $('#detailAnomalyIndicators').text(anomalyIndicators);
+            $('#detailVendorRisk').text(vendorRisk);
+            $('#detailTransactionAnomalies').text(transactionAnomalies);
+            $('#detailAnalysisReport').html(analysisReport);
+            $('#invoiceDetailsModal').modal('show');
+        }
+
+
+        /**
+         * Simulates an invoice analysis and displays results in a modal.
+         * @param {string} invoiceId - The invoice ID to analyze.
+         * @param {string} vendorName - An optional vendor name.
+         */
+        function performInvoiceAnalysis(invoiceId, vendorName) {
+            if (!invoiceId) {
+                showMessageModal('Input Required', 'Please enter an Invoice ID to perform analysis.');
+                return;
+            }
+
+            // Attempt to find full details in allInvoiceDetails
+            const invoiceDetails = allInvoiceDetails[invoiceId];
+
+            if (invoiceDetails) {
+                $('#iaInvoiceIdDisplay').text(invoiceDetails.invoiceId);
+                $('#iaInvoiceId').text(invoiceDetails.invoiceId);
+                $('#iaVendorName').text(invoiceDetails.vendor);
+                $('#iaAmount').text(invoiceDetails.amount);
+                $('#iaDate').text(invoiceDetails.date);
+                $('#iaAnomalyIndicators').text(invoiceDetails.anomalyIndicators);
+                $('#iaVendorRisk').text(invoiceDetails.vendorRisk);
+                $('#iaTransactionAnomalies').text(invoiceDetails.transactionAnomalies);
+                $('#iaRecommendedAction').html(invoiceDetails.analysisReport); // Using analysisReport for recommended action
+
+                let mlScoreClass = 'bg-info';
+                if (invoiceDetails.vendorRisk.includes('High Risk') || invoiceDetails.anomalyIndicators.includes('Critical')) {
+                    $('#iaMlScore').text('95% (High)');
+                    mlScoreClass = 'bg-danger';
+                } else if (invoiceDetails.vendorRisk.includes('Medium Risk') || invoiceDetails.anomalyIndicators.includes('Unusual')) {
+                    $('#iaMlScore').text('78% (Medium)');
+                    mlScoreClass = 'bg-warning';
+                } else {
+                    $('#iaMlScore').text('45% (Low)');
+                }
+                $('#iaMlScore').removeClass().addClass('badge ' + mlScoreClass);
+
+            } else {
+                // Default or no match - simulate random results
+                $('#iaInvoiceIdDisplay').text(invoiceId);
+                $('#iaInvoiceId').text(invoiceId);
+                $('#iaVendorName').text(vendorName || 'N/A');
+
+                let amount = '$' + (Math.floor(Math.random() * 5000) + 500); // Random amount
+                let date = '2023-11-' + (Math.floor(Math.random() * 28) + 1).toString().padStart(2, '0');
+                let anomalyIndicators = 'None detected';
+                let vendorRisk = 'Low Risk (New/Unknown Vendor)';
+                let transactionAnomalies = 'None detected';
+                let mlScore = '20% (Low)';
+                let recommendedAction = '<p>No significant anomalies detected for this invoice ID. Please ensure the ID is correct.</p><p class="text-secondary font-weight-bold">Recommended Action: Monitor for future activity. If genuine, manual review may be required.</p>';
+                let mlScoreClass = 'bg-secondary';
+
+                $('#iaAmount').text(amount);
+                $('#iaDate').text(date);
+                $('#iaAnomalyIndicators').text(anomalyIndicators);
+                $('#iaVendorRisk').text(vendorRisk);
+                $('#iaTransactionAnomalies').text(transactionAnomalies);
+                $('#iaMlScore').text(mlScore).removeClass().addClass('badge ' + mlScoreClass);
+                $('#iaRecommendedAction').html(recommendedAction);
+            }
+
+            $('#invoiceAnalysisModal').modal('show');
+        }
+
+        /**
+         * Displays chart data in a tabular format within a modal, with clickable rows for drill-down.
+         * @param {string} title - The title of the chart.
+         * @param {string} description - The description of the chart.
+         * @param {Array<string>} labels - The labels for the chart data.
+         * @param {Array<number>} data - The data values for the chart.
+         * @param {string} col1Header - Header for the first column (labels).
+         * @param {string} col2Header - Header for the second column (data values).
+         */
+        function showChartDetails(title, description, labels, data, col1Header, col2Header) {
+            $('#chartDetailsModalLabel').text(title);
+            $('#chartDetailTitle').text(title);
+            $('#chartDetailDescription').text(description);
+
+            const $tableHeaders = $('#chartDetailTableHeaders');
+            $tableHeaders.empty().append(`<th>${col1Header}</th><th>${col2Header}</th>`);
+
+            const $tableBody = $('#chartDetailTableBody');
+            $tableBody.empty();
+
+            labels.forEach((label, index) => {
+                // Special handling for chart drill-down data
+                const correspondingInvoiceId = {
+                    'Duplicate Invoices': 'INV-DUP-001',
+                    'Non-existent Vendors': 'INV-GHOST-001',
+                    'Inflated Amounts': 'INV-INF-001',
+                    'Service Not Rendered': 'INV-NO-SVC-001',
+                    'Incorrect Dates/Details': 'INV-DATE-001',
+                    'High Risk': 'INV-RISK-HIGH-001',
+                    'Medium Risk': 'INV-RISK-MED-001',
+                    'Low Risk': 'INV-RISK-LOW-001'
+                }[label]; // Map chart label to a specific sample invoice ID
+
+                if (correspondingInvoiceId && allInvoiceDetails[correspondingInvoiceId]) {
+                    const row = $(`<tr class="chart-table-row"><td>${label}</td><td>${data[index]}</td></tr>`);
+                    row.on('click', () => {
+                        $('#chartDetailsModal').modal('hide');
+                        const fullDetails = allInvoiceDetails[correspondingInvoiceId];
+                        showInvoiceDetails(
+                            fullDetails.invoiceId, fullDetails.vendor, fullDetails.amount, fullDetails.date,
+                            fullDetails.anomalyIndicators, fullDetails.vendorRisk, fullDetails.transactionAnomalies,
+                            fullDetails.analysisReport
+                        );
+                    });
+                    $tableBody.append(row);
+                } else {
+                    const row = `<tr><td>${label}</td><td>${data[index]}</td></tr>`;
+                    $tableBody.append(row);
+                }
+            });
+            $('#chartDetailsModal').modal('show');
+        }
+
+        /**
+         * Displays a list of flagged invoices for a specific identification method in a tabular format within a modal.
+         * Allows drill-down to individual invoice details.
+         * @param {string} methodType - The type of identification method (e.g., 'Data Discrepancy Analysis').
+         */
+        function showFlaggedInvoicesForMethod(methodType) {
+            const invoices = flaggedInvoicesByMethod[methodType];
+            if (!invoices || invoices.length === 0) {
+                showMessageModal('No Flagged Invoices', `No flagged invoices found for "${methodType}" method at this time.`);
+                return;
+            }
+
+            $('#chartDetailsModalLabel').text(`Flagged Invoices by: ${methodType}`);
+            $('#chartDetailTitle').text(methodType);
+            $('#chartDetailDescription').text(`Review invoices flagged by the "${methodType}" method.`);
+
+            const $tableHeaders = $('#chartDetailTableHeaders');
+            $tableHeaders.empty().append('<th>Invoice ID</th><th>Vendor</th><th>Amount</th><th>Risk Score</th>');
+
+            const $tableBody = $('#chartDetailTableBody');
+            $tableBody.empty();
+
+            invoices.forEach(invoice => {
+                const row = $(`<tr class="chart-table-row">
+                    <td>${invoice.invoiceId}</td>
+                    <td>${invoice.vendor}</td>
+                    <td>${invoice.amount}</td>
+                    <td><span class="badge bg-${getRiskBadgeClass(invoice.riskScore)}">${invoice.riskScore}</span></td>
+                </tr>`);
+                row.on('click', () => {
+                    const fullDetails = allInvoiceDetails[invoice.invoiceId];
+                    if (fullDetails) {
+                        $('#chartDetailsModal').modal('hide');
+                        showInvoiceDetails(
+                            fullDetails.invoiceId, fullDetails.vendor, fullDetails.amount, fullDetails.date,
+                            fullDetails.anomalyIndicators, fullDetails.vendorRisk, fullDetails.transactionAnomalies,
+                            fullDetails.analysisReport
+                        );
+                    } else {
+                        showMessageModal('Details Not Found', `Detailed information for Invoice ID: ${invoice.invoiceId} is not available.`);
+                    }
+                });
+                $tableBody.append(row);
+            });
+
+            $('#chartDetailsModal').modal('show');
+        }
+
+        /**
+         * Helper function to get the appropriate Bootstrap badge class for risk score.
+         * @param {string} riskScore - The risk score (e.g., 'High', 'Medium', 'Low', 'Critical').
+         * @returns {string} The Bootstrap background class name (e.g., 'danger', 'warning', 'info', 'primary').
+         */
+        function getRiskBadgeClass(riskScore) {
+            if (riskScore === 'High' || riskScore === 'Critical') return 'danger';
+            if (riskScore === 'Medium') return 'warning';
+            return 'info'; // For Low risk and others
+        }
+
+
+        $(document).ready(function() {
+            // Chart for Fake Invoice Type Distribution
+            var invoiceTypeChartCtx = document.getElementById('invoiceTypeChart').getContext('2d');
+            new Chart(invoiceTypeChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Duplicate Invoices', 'Non-existent Vendors', 'Inflated Amounts', 'Service Not Rendered', 'Incorrect Dates/Details'],
+                    datasets: [{
+                        data: [60, 40, 30, 25, 10], // Example counts
+                        backgroundColor: [
+                            'rgba(220, 53, 69, 0.7)',  // Danger (Duplicate Invoices)
+                            'rgba(255, 193, 7, 0.7)',  // Warning (Non-existent Vendors)
+                            'rgba(23, 162, 184, 0.7)', // Info (Inflated Amounts)
+                            'rgba(0, 123, 255, 0.7)',  // Primary (Service Not Rendered)
+                            'rgba(108, 117, 125, 0.7)' // Secondary (Incorrect Dates/Details)
+                        ],
+                        borderColor: [
+                            'rgba(220, 53, 69, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(23, 162, 184, 1)',
+                            'rgba(0, 123, 255, 1)',
+                            'rgba(108, 117, 125, 1)'
+                        ],
+                        borderWidth: 1,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Chart for Invoice Risk Level Distribution
+            var invoiceRiskChartCtx = document.getElementById('invoiceRiskChart').getContext('2d');
+            new Chart(invoiceRiskChartCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['High Risk', 'Medium Risk', 'Low Risk'],
+                    datasets: [{
+                        data: [35, 80, 130], // Example counts based on Flagged for Review
+                        backgroundColor: ['#dc3545', '#ffc107', '#17a2b8'], // Danger, Warning, Info
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

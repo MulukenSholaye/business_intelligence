@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tax Risk Compliance Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(to bottom right, #e0e7ff, #c3daff);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .card {
+            background-color: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        @media (max-width: 768px) {
+            .grid-cols-4-md {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            .grid-cols-2-md {
+                grid-template-columns: repeat(1, minmax(0, 1fr));
+            }
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        .animate-slide-up {
+            animation: slideUp 0.8s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .flatpickr-input {
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            font-size: 0.875rem;
+            line-height: 1.25rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .flatpickr-input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+        <!-- Header Section -->
+        <header class="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-2xl shadow-lg animate-fade-in">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4 sm:mb-0">Tax Risk & Compliance Dashboard</h1>
+            <div class="flex items-center space-x-4">
+                <span class="text-gray-600">Last Updated: <span id="lastUpdated"></span></span>
+                <i class="fas fa-sync-alt text-blue-500 cursor-pointer hover:text-blue-700" onclick="applyFilters()"></i>
+            </div>
+        </header>
+
+        <!-- Filter Section -->
+        <section class="card animate-slide-up delay-100">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Filters</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                    <input type="text" id="startDate" class="flatpickr-input" placeholder="Select start date">
+                </div>
+                <div>
+                    <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                    <input type="text" id="endDate" class="flatpickr-input" placeholder="Select end date">
+                </div>
+                <div>
+                    <label for="riskLevel" class="block text-sm font-medium text-gray-700 mb-1">Risk Level</label>
+                    <select id="riskLevel" class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 p-2">
+                        <option value="">All</option>
+                        <option value="High">High</option>
+                        <option value="Medium">Medium</option>
+                        <option value="Low">Low</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4 flex justify-end">
+                <button onclick="applyFilters()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition duration-150 ease-in-out">Apply Filters</button>
+            </div>
+        </section>
+
+        <!-- Key Metrics Section -->
+        <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 animate-slide-up delay-200" id="keyMetrics">
+            <!-- Metrics will be dynamically loaded here -->
+        </section>
+
+        <!-- Charts Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="card animate-slide-up delay-300">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Tax Error Type Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="errorTypeChart"></canvas>
+                </div>
+            </div>
+            <div class="card animate-slide-up delay-400">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Compliance Score Trend</h2>
+                <div class="chart-container">
+                    <canvas id="complianceTrendChart"></canvas>
+                </div>
+            </div>
+            <div class="card animate-slide-up delay-500">
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">High-Risk Transactions by Region</h2>
+                <div class="chart-container">
+                    <canvas id="riskByRegionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- High-Risk Transactions Table Section -->
+        <section class="card animate-slide-up delay-600">
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">High-Risk Transactions</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg shadow-md">
+                    <thead>
+                        <tr class="bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Invoice ID</th>
+                            <th class="py-3 px-6 text-left">Buyer</th>
+                            <th class="py-3 px-6 text-left">Seller</th>
+                            <th class="py-3 px-6 text-left">Error Type</th>
+                            <th class="py-3 px-6 text-right">Amount (ETB)</th>
+                            <th class="py-3 px-6 text-center">Risk Level</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm font-light" id="riskTransactionTableBody">
+                        <!-- Transaction rows will be dynamically loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let errorTypeChart;
+        let complianceTrendChart;
+        let riskByRegionChart;
+        let flatpickrInstanceStartDate;
+        let flatpickrInstanceEndDate;
+
+        // Function to generate mock data for Tax Risk Compliance
+        function generateMockTaxData() {
+            const numTransactions = 150;
+            const transactions = [];
+            const errorTypes = [
+                { ErrorTypeID: 'E001', error_category: 'Calculation Error', severity_level: 'High' },
+                { ErrorTypeID: 'E002', error_category: 'Missing Information', severity_level: 'Medium' },
+                { ErrorTypeID: 'E003', error_category: 'Incorrect Tax Code', severity_level: 'High' },
+                { ErrorTypeID: 'E004', error_category: 'Duplicate Entry', severity_level: 'Medium' },
+                { ErrorTypeID: 'E005', error_category: 'Late Filing', severity_level: 'Low' }
+            ];
+            const buyerNames = ['Ethio Telecom', 'Commercial Bank of Ethiopia', 'Dashen Bank', 'Awash Bank', 'Oromia Bank', 'Abyssinia Bank'];
+            const sellerNames = ['ABC Corp', 'XYZ Ltd', 'Global Services', 'Local Retailers', 'Tech Solutions'];
+            const regions = ['Addis Ababa', 'Oromia', 'Amhara', 'Tigray'];
+
+            for (let i = 0; i < numTransactions; i++) {
+                const invoiceId = `TXN${String(i + 1).padStart(4, '0')}`;
+                const transactionDate = new Date(2023, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1);
+                const transactionAmount = (Math.random() * 50000 + 5000).toFixed(2); // 5,000 to 55,000 ETB
+                const randomError = errorTypes[Math.floor(Math.random() * errorTypes.length)];
+                const riskLevel = randomError.severity_level;
+                const buyerRegion = regions[Math.floor(Math.random() * regions.length)];
+                const sellerRegion = regions[Math.floor(Math.random() * regions.length)];
+
+                transactions.push({
+                    InvoiceID: invoiceId,
+                    BuyerID: `B${String(Math.floor(Math.random() * buyerNames.length) + 1).padStart(3, '0')}`,
+                    buyerName: buyerNames[Math.floor(Math.random() * buyerNames.length)],
+                    SellerID: `S${String(Math.floor(Math.random() * sellerNames.length) + 1).padStart(3, '0')}`,
+                    sellerName: sellerNames[Math.floor(Math.random() * sellerNames.length)],
+                    ErrorTypeID: randomError.ErrorTypeID,
+                    error_category: randomError.error_category,
+                    severity_level: randomError.severity_level,
+                    InvoiceTotal_amount: parseFloat(transactionAmount),
+                    invoice_Date: transactionDate.toISOString().split('T')[0],
+                    risk_level: riskLevel,
+                    buyer_Region: buyerRegion,
+                    seller_Region: sellerRegion
+                });
+            }
+
+            // Generate mock compliance score trend
+            const complianceTrend = [];
+            let currentScore = 90; // Starting compliance score
+            for (let month = 0; month < 12; month++) {
+                const date = new Date(2023, month, 15).toISOString().split('T')[0];
+                const scoreChange = (Math.random() - 0.5) * 10; // -5 to +5
+                currentScore = Math.max(70, Math.min(98, currentScore + scoreChange)); // Keep score between 70 and 98
+                complianceTrend.push({ date: date, score: parseFloat(currentScore.toFixed(2)) });
+            }
+
+            return { transactions, complianceTrend };
+        }
+
+        let allTaxData = generateMockTaxData();
+
+        // Function to process data for charts and reports based on filters
+        function processTaxData(transactions, complianceTrend, filters) {
+            let filteredTransactions = transactions;
+
+            // Apply date filters
+            if (filters.startDate) {
+                const start = new Date(filters.startDate);
+                filteredTransactions = filteredTransactions.filter(txn => new Date(txn.invoice_Date) >= start);
+            }
+            if (filters.endDate) {
+                const end = new Date(filters.endDate);
+                filteredTransactions = filteredTransactions.filter(txn => new Date(txn.invoice_Date) <= end);
+            }
+
+            // Apply risk level filter
+            if (filters.riskLevel && filters.riskLevel !== '') {
+                filteredTransactions = filteredTransactions.filter(txn => txn.risk_level === filters.riskLevel);
+            }
+
+            // --- Key Metrics ---
+            const totalHighRiskTransactions = filteredTransactions.filter(txn => txn.risk_level === 'High').length;
+            const totalTransactions = filteredTransactions.length;
+            const averageComplianceScore = complianceTrend.reduce((sum, item) => sum + item.score, 0) / complianceTrend.length;
+            const totalTaxDiscrepancies = filteredTransactions.filter(txn => txn.error_category === 'Calculation Error' || txn.error_category === 'Incorrect Tax Code').length;
+
+            const reports = [
+                { id: 'highRiskTxns', title: 'High-Risk Transactions', value: totalHighRiskTransactions.toLocaleString(), icon: 'fa-exclamation-circle' },
+                { id: 'avgCompliance', title: 'Avg. Compliance Score', value: `${averageComplianceScore.toFixed(1)}%`, icon: 'fa-check-circle' },
+                { id: 'auditFlags', title: 'Total Audit Flags', value: totalTaxDiscrepancies.toLocaleString(), icon: 'fa-flag' },
+                { id: 'totalTxns', title: 'Total Transactions', value: totalTransactions.toLocaleString(), icon: 'fa-receipt' }
+            ];
+
+            // --- Error Type Distribution Chart Data ---
+            const errorTypeCounts = {};
+            filteredTransactions.forEach(txn => {
+                errorTypeCounts[txn.error_category] = (errorTypeCounts[txn.error_category] || 0) + 1;
+            });
+            const errorTypeChartData = {
+                labels: Object.keys(errorTypeCounts),
+                datasets: [{
+                    label: 'Number of Errors',
+                    data: Object.values(errorTypeCounts),
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                    hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                    borderWidth: 1
+                }]
+            };
+
+            // --- Compliance Score Trend Chart Data ---
+            const complianceTrendChartData = {
+                labels: complianceTrend.map(item => item.date),
+                datasets: [{
+                    label: 'Compliance Score (%)',
+                    data: complianceTrend.map(item => item.score),
+                    borderColor: '#4CAF50',
+                    backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    fill: true,
+                    tension: 0.3
+                }]
+            };
+
+            // --- High-Risk Transactions by Region Chart Data ---
+            const riskByRegion = {};
+            filteredTransactions.filter(txn => txn.risk_level === 'High').forEach(txn => {
+                riskByRegion[txn.buyer_Region] = (riskByRegion[txn.buyer_Region] || 0) + txn.InvoiceTotal_amount;
+            });
+            const riskByRegionChartData = {
+                labels: Object.keys(riskByRegion),
+                datasets: [{
+                    label: 'High-Risk Amount (ETB)',
+                    data: Object.values(riskByRegion),
+                    backgroundColor: '#F44336', // Red color for risk
+                    borderColor: '#F44336',
+                    borderWidth: 1
+                }]
+            };
+
+            // --- High-Risk Transactions Table Data ---
+            const riskTransactionTableData = filteredTransactions.filter(txn => txn.risk_level === 'High' || txn.risk_level === 'Medium').map(txn => ({
+                invoiceId: txn.InvoiceID,
+                buyer: txn.buyerName,
+                seller: txn.sellerName,
+                errorType: txn.error_category,
+                amount: txn.InvoiceTotal_amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+                riskLevel: txn.risk_level
+            }));
+
+            return {
+                errorTypeChartData,
+                complianceTrendChartData,
+                riskByRegionChartData,
+                reports,
+                riskTransactionTableData
+            };
+        }
+
+        // Function to update charts and reports
+        function updateTaxDashboard(data) {
+            // Update Error Type Chart
+            if (errorTypeChart) {
+                errorTypeChart.data = data.errorTypeChartData;
+                errorTypeChart.update();
+            } else {
+                errorTypeChart = new Chart(document.getElementById('errorTypeChart'), {
+                    type: 'doughnut',
+                    data: data.errorTypeChartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { font: { family: 'Inter' } }
+                            },
+                            title: { display: false }
+                        }
+                    }
+                });
+            }
+
+            // Update Compliance Trend Chart
+            if (complianceTrendChart) {
+                complianceTrendChart.data = data.complianceTrendChartData;
+                complianceTrendChart.update();
+            } else {
+                complianceTrendChart = new Chart(document.getElementById('complianceTrendChart'), {
+                    type: 'line',
+                    data: data.complianceTrendChartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false, // Scores might not start at zero
+                                title: { display: true, text: 'Compliance Score (%)', font: { family: 'Inter' } },
+                                ticks: { font: { family: 'Inter' } }
+                            },
+                            x: {
+                                ticks: { font: { family: 'Inter' } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Update Risk by Region Chart
+            if (riskByRegionChart) {
+                riskByRegionChart.data = data.riskByRegionChartData;
+                riskByRegionChart.update();
+            } else {
+                riskByRegionChart = new Chart(document.getElementById('riskByRegionChart'), {
+                    type: 'bar',
+                    data: data.riskByRegionChartData,
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: { display: true, text: 'High-Risk Amount (ETB)', font: { family: 'Inter' } },
+                                ticks: { font: { family: 'Inter' } }
+                            },
+                            x: {
+                                ticks: { font: { family: 'Inter' } }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Update Key Metrics
+            const keyMetricsContainer = document.getElementById('keyMetrics');
+            keyMetricsContainer.innerHTML = '';
+            data.reports.forEach(report => {
+                const metricCard = `
+                    <div class="card flex items-center space-x-4 p-4 animate-fade-in">
+                        <div class="p-3 rounded-full bg-indigo-100 text-indigo-600 text-xl">
+                            <i class="${report.icon}"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm">${report.title}</p>
+                            <p class="text-xl font-bold text-gray-800">${report.value}</p>
+                        </div>
+                    </div>
+                `;
+                keyMetricsContainer.innerHTML += metricCard;
+            });
+
+            // Update High-Risk Transactions Table
+            const riskTransactionTableBody = document.getElementById('riskTransactionTableBody');
+            riskTransactionTableBody.innerHTML = '';
+            data.riskTransactionTableData.forEach(row => {
+                const riskColor = row.riskLevel === 'High' ? 'bg-red-100 text-red-800' :
+                                  row.riskLevel === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                                  'bg-green-100 text-green-800';
+                const tableRow = `
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="py-3 px-6 text-left whitespace-nowrap">${row.invoiceId}</td>
+                        <td class="py-3 px-6 text-left">${row.buyer}</td>
+                        <td class="py-3 px-6 text-left">${row.seller}</td>
+                        <td class="py-3 px-6 text-left">${row.errorType}</td>
+                        <td class="py-3 px-6 text-right">${row.amount}</td>
+                        <td class="py-3 px-6 text-center">
+                            <span class="relative inline-block px-3 py-1 font-semibold leading-tight">
+                                <span aria-hidden="true" class="absolute inset-0 ${riskColor} opacity-50 rounded-full"></span>
+                                <span class="relative">${row.riskLevel}</span>
+                            </span>
+                        </td>
+                    </tr>
+                `;
+                riskTransactionTableBody.innerHTML += tableRow;
+            });
+
+            // Update last updated timestamp
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        }
+
+        // Function to apply filters and refresh dashboard
+        function applyFilters() {
+            const startDate = flatpickrInstanceStartDate.selectedDates[0] ? flatpickrInstanceStartDate.selectedDates[0].toISOString().split('T')[0] : null;
+            const endDate = flatpickrInstanceEndDate.selectedDates[0] ? flatpickrInstanceEndDate.selectedDates[0].toISOString().split('T')[0] : null;
+            const riskLevel = document.getElementById('riskLevel').value;
+
+            const filters = { startDate, endDate, riskLevel };
+            const processed = processTaxData(allTaxData.transactions, allTaxData.complianceTrend, filters);
+            updateTaxDashboard(processed);
+            applyAnimation();
+        }
+
+        // Function to apply animations
+        function applyAnimation() {
+            document.querySelectorAll('.animate-fade-in, .animate-slide-up').forEach((element, index) => {
+                element.style.animationDelay = `${index * 0.1}s`;
+                element.classList.add('animated');
+            });
+        }
+
+        // Initialize Flatpickr date pickers
+        document.addEventListener('DOMContentLoaded', () => {
+            flatpickrInstanceStartDate = flatpickr("#startDate", {
+                dateFormat: "Y-m-d",
+            });
+            flatpickrInstanceEndDate = flatpickr("#endDate", {
+                dateFormat: "Y-m-d",
+            });
+
+            // Initial dashboard load
+            applyFilters();
+            applyAnimation();
+        });
+    </script>
+</body>
+</html>

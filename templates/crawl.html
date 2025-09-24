@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ministry of Revenues | Sentiment Analysis</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <!-- Custom CSS -->
+  <style>
+    /* Custom chart styles */
+    .chart-container {
+      position: relative;
+      height: 300px;
+      width: 100%;
+    }
+    
+    /* Sentiment highlight classes */
+    .sentiment-positive {
+      color: #28a745;
+      background-color: rgba(40, 167, 69, 0.1);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    
+    .sentiment-negative {
+      color: #dc3545;
+      background-color: rgba(220, 53, 69, 0.1);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    
+    .sentiment-neutral {
+      color: #6c757d;
+      background-color: rgba(108, 117, 125, 0.1);
+      padding: 2px 5px;
+      border-radius: 3px;
+    }
+    
+    /* Custom tab content padding */
+    .tab-content > .tab-pane {
+      padding: 1.25rem;
+    }
+    
+    /* Report iframe styling */
+    .report-iframe {
+      width: 100%;
+      height: 800px;
+      border: none;
+      border-radius: 0.25rem;
+    }
+    
+    /* Dark blue header container */
+    .main-header-container {
+      background-color: #003366;
+      color: white;
+      padding: 15px 20px;
+      margin-bottom: 20px;
+      border-radius: 0.25rem;
+    }
+    
+    /* Remove sidebar-related styles */
+    .wrapper {
+      display: block;
+    }
+    
+    .content-wrapper {
+      margin-left: 0;
+    }
+    
+    /* Full width layout */
+    .full-width-container {
+      max-width: 100%;
+      padding: 0 15px;
+    }
+  </style>
+</head>
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+
+  <!-- Main Header -->
+  <div class="main-header-container">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-6">
+          <h1 class="m-0">
+            <i class="fas fa-landmark mr-2"></i> Ministry of Revenues - Sentiment Analysis
+          </h1>
+        </div>
+        <div class="col-md-6 text-right">
+          <div class="btn-group">
+            <button type="button" class="btn btn-outline-light" onclick="loadReport('daily')">
+              <i class="fas fa-calendar-day"></i> Daily Report
+            </button>
+            <button type="button" class="btn btn-outline-light" onclick="loadReport('weekly')">
+              <i class="fas fa-calendar-week"></i> Weekly
+            </button>
+            <button type="button" class="btn btn-outline-light" onclick="loadReport('monthly')">
+              <i class="fas fa-calendar"></i> Monthly
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid full-width-container">
+        <div class="row">
+          <div class="col-12">
+            <!-- Custom Tabs -->
+            <div class="card">
+              <div class="card-header d-flex p-0">
+                <ul class="nav nav-pills ml-auto p-2">
+                  <li class="nav-item"><a class="nav-link active" href="#crawler" data-toggle="tab"><i class="fas fa-spider"></i> Web Crawler</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#sentiment" data-toggle="tab"><i class="fas fa-comment-dots"></i> Sentiment Analysis</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#dashboard" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#reports" data-toggle="tab"><i class="fas fa-file-alt"></i> Reports</a></li>
+                </ul>
+              </div><!-- /.card-header -->
+              <div class="card-body">
+                <div class="tab-content">
+                  <!-- Web Crawler Tab -->
+                  <div class="tab-pane active" id="crawler">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="card card-primary">
+                          <div class="card-header">
+                            <h3 class="card-title">Crawler Configuration</h3>
+                          </div>
+                          <form id="crawlerForm">
+                            <div class="card-body">
+                              <div class="form-group">
+                                <label for="targetUrls">Target URLs (comma separated)</label>
+                                <textarea class="form-control" id="targetUrls" rows="5" placeholder="https://example.com, https://news.gov.revenue, https://taxforum.org"></textarea>
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="crawlDepth">Crawl Depth</label>
+                                <select class="form-control" id="crawlDepth">
+                                  <option value="1">1 (Only specified pages)</option>
+                                  <option value="2">2 (Pages linked from specified pages)</option>
+                                  <option value="3" selected>3 (Deeper crawl)</option>
+                                </select>
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="keywords">Keywords to monitor (comma separated)</label>
+                                <input type="text" class="form-control" id="keywords" placeholder="tax reform, revenue collection, fiscal policy">
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="excludeKeywords">Exclude keywords (comma separated)</label>
+                                <input type="text" class="form-control" id="excludeKeywords" placeholder="personal, unrelated, spam">
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="maxPages">Maximum pages to crawl</label>
+                                <input type="number" class="form-control" id="maxPages" min="1" max="1000" value="100">
+                              </div>
+                            </div>
+                            <div class="card-footer">
+                              <button type="button" class="btn btn-primary" onclick="startCrawling()">
+                                <i class="fas fa-play mr-1"></i> Start Crawling
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card card-success">
+                          <div class="card-header">
+                            <h3 class="card-title">Crawler Results</h3>
+                          </div>
+                          <div class="card-body">
+                            <div class="overlay-wrapper" id="crawlerLoading" style="display: none;">
+                              <div class="overlay">
+                                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pt-2">Crawling in progress...</div>
+                              </div>
+                            </div>
+                            <div id="crawlerResults">
+                              <p>Crawler results will appear here. The system will scan the specified websites for content related to ministry operations and public sentiment.</p>
+                            </div>
+                            
+                            <div class="callout callout-info mt-3" id="crawlSummary" style="display: none;">
+                              <h5>Crawl Summary</h5>
+                              <p id="summaryText"></p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                  
+                  <!-- Sentiment Analysis Tab -->
+                  <div class="tab-pane" id="sentiment">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="card card-primary">
+                          <div class="card-header">
+                            <h3 class="card-title">Analyze Text</h3>
+                          </div>
+                          <form id="sentimentForm">
+                            <div class="card-body">
+                              <div class="form-group">
+                                <label for="analysisText">Text to analyze</label>
+                                <textarea class="form-control" id="analysisText" rows="10" placeholder="Paste text here to analyze sentiment..."></textarea>
+                              </div>
+                              
+                              <div class="form-group">
+                                <label for="sourceType">Text source</label>
+                                <select class="form-control" id="sourceType">
+                                  <option value="general">General Public</option>
+                                  <option value="media">Media Outlet</option>
+                                  <option value="expert">Expert Analysis</option>
+                                  <option value="social">Social Media</option>
+                                </select>
+                              </div>
+                              
+                              <div class="form-group">
+                                <div class="custom-control custom-checkbox">
+                                  <input class="custom-control-input" type="checkbox" id="highlightKeywords" checked>
+                                  <label for="highlightKeywords" class="custom-control-label">Highlight keywords related to revenue policies</label>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="card-footer">
+                              <button type="button" class="btn btn-primary" onclick="analyzeSentiment()">
+                                <i class="fas fa-chart-pie mr-1"></i> Analyze Sentiment
+                              </button>
+                              <button type="button" class="btn btn-secondary float-right" onclick="analyzeCrawledData()">
+                                <i class="fas fa-database mr-1"></i> Analyze Crawled Data
+                              </button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="card card-success">
+                          <div class="card-header">
+                            <h3 class="card-title">Analysis Results</h3>
+                          </div>
+                          <div class="card-body">
+                            <div class="overlay-wrapper" id="sentimentLoading" style="display: none;">
+                              <div class="overlay">
+                                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pt-2">Analyzing text...</div>
+                              </div>
+                            </div>
+                            <div id="sentimentResults">
+                              <p>Sentiment analysis results will appear here. The system will evaluate the tone and emotional content of the text regarding revenue policies and ministry operations.</p>
+                            </div>
+                            
+                            <div class="callout callout-info mt-3" id="sentimentSummary" style="display: none;">
+                              <h5>Sentiment Summary</h5>
+                              <p id="sentimentSummaryText"></p>
+                              <div class="chart-container">
+                                <canvas id="sentimentChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                  
+                  <!-- Dashboard Tab -->
+                  <div class="tab-pane" id="dashboard">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <div class="card card-primary">
+                          <div class="card-header">
+                            <h3 class="card-title">Sentiment Trends</h3>
+                            <div class="card-tools">
+                              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="chart">
+                              <canvas id="trendChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="row">
+                          <div class="col-md-4">
+                            <div class="info-box bg-gradient-info">
+                              <span class="info-box-icon"><i class="far fa-thumbs-up"></i></span>
+                              <div class="info-box-content">
+                                <span class="info-box-text">Positive</span>
+                                <span class="info-box-number">68%</span>
+                                <div class="progress">
+                                  <div class="progress-bar" style="width: 68%"></div>
+                                </div>
+                                <span class="progress-description">
+                                  <i class="fas fa-arrow-up text-success"></i> 12% increase
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="info-box bg-gradient-warning">
+                              <span class="info-box-icon"><i class="far fa-meh"></i></span>
+                              <div class="info-box-content">
+                                <span class="info-box-text">Neutral</span>
+                                <span class="info-box-number">25%</span>
+                                <div class="progress">
+                                  <div class="progress-bar" style="width: 25%"></div>
+                                </div>
+                                <span class="progress-description">
+                                  <i class="fas fa-arrow-down text-danger"></i> 5% decrease
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4">
+                            <div class="info-box bg-gradient-danger">
+                              <span class="info-box-icon"><i class="far fa-thumbs-down"></i></span>
+                              <div class="info-box-content">
+                                <span class="info-box-text">Negative</span>
+                                <span class="info-box-number">7%</span>
+                                <div class="progress">
+                                  <div class="progress-bar" style="width: 7%"></div>
+                                </div>
+                                <span class="progress-description">
+                                  <i class="fas fa-arrow-down text-danger"></i> 3% decrease
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="card card-primary">
+                          <div class="card-header">
+                            <h3 class="card-title">Key Topics Distribution</h3>
+                            <div class="card-tools">
+                              <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                              </button>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="chart">
+                              <canvas id="topicsChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="col-md-4">
+                        <div class="card card-success">
+                          <div class="card-header">
+                            <h3 class="card-title">Recent Analysis</h3>
+                            <div class="card-tools">
+                              <span class="badge badge-success">Updated Today</span>
+                            </div>
+                          </div>
+                          <div class="card-body p-0">
+                            <ul class="products-list product-list-in-card pl-2 pr-2">
+                              <li class="item">
+                                <div class="product-info">
+                                  <a href="javascript:void(0)" class="product-title">Tax Reform Announcement
+                                    <span class="badge badge-success float-right">78% Positive</span></a>
+                                  <span class="product-description">
+                                    Media outlets | May 15, 2023
+                                  </span>
+                                  <p class="text-sm">Public response to the new tax reform package has been overwhelmingly positive...</p>
+                                </div>
+                              </li>
+                              <li class="item">
+                                <div class="product-info">
+                                  <a href="javascript:void(0)" class="product-title">Online Payment System
+                                    <span class="badge badge-warning float-right">45% Positive</span></a>
+                                  <span class="product-description">
+                                    Social media | May 10, 2023
+                                  </span>
+                                  <p class="text-sm">Users report technical difficulties with the new online portal...</p>
+                                </div>
+                              </li>
+                              <li class="item">
+                                <div class="product-info">
+                                  <a href="javascript:void(0)" class="product-title">Enforcement Measures
+                                    <span class="badge badge-danger float-right">62% Negative</span></a>
+                                  <span class="product-description">
+                                    Public forums | May 5, 2023
+                                  </span>
+                                  <p class="text-sm">Recent enforcement actions have drawn criticism from small business owners...</p>
+                                </div>
+                              </li>
+                              <li class="item">
+                                <div class="product-info">
+                                  <a href="javascript:void(0)" class="product-title">Annual Report Release
+                                    <span class="badge badge-success float-right">85% Positive</span></a>
+                                  <span class="product-description">
+                                    Expert analysis | May 1, 2023
+                                  </span>
+                                  <p class="text-sm">Economic analysts have praised the transparency and detail in this year's report...</p>
+                                </div>
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="card-footer text-center">
+                            <a href="javascript:void(0)" class="uppercase">View All Analysis</a>
+                          </div>
+                        </div>
+                        
+                        <div class="card card-primary">
+                          <div class="card-header">
+                            <h3 class="card-title">Sentiment Distribution</h3>
+                          </div>
+                          <div class="card-body">
+                            <div class="chart-container">
+                              <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="card card-info">
+                          <div class="card-header">
+                            <h3 class="card-title">Recommendations</h3>
+                          </div>
+                          <div class="card-body">
+                            <ul class="list-group list-group-unbordered mb-3">
+                              <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success mr-2"></i> Address technical issues with online payment system
+                              </li>
+                              <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success mr-2"></i> Communicate enforcement policy rationale
+                              </li>
+                              <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success mr-2"></i> Highlight success stories from tax reform
+                              </li>
+                              <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success mr-2"></i> Monitor social media for emerging concerns
+                              </li>
+                              <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success mr-2"></i> Engage with business forums
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                  
+                  <!-- Reports Tab -->
+                  <div class="tab-pane" id="reports">
+                    <div class="row">
+                      <div class="col-12">
+                        <div class="card card-primary">
+                          <div class="card-header">
+                            <h3 class="card-title">Generated Reports</h3>
+                            <div class="card-tools">
+                              <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" onclick="loadReport('daily')">
+                                  <i class="fas fa-calendar-day"></i> Daily
+                                </button>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="loadReport('weekly')">
+                                  <i class="fas fa-calendar-week"></i> Weekly
+                                </button>
+                                <button type="button" class="btn btn-primary btn-sm" onclick="loadReport('monthly')">
+                                  <i class="fas fa-calendar"></i> Monthly
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="card-body">
+                            <div class="overlay-wrapper" id="reportLoading">
+                              <div class="overlay">
+                                <i class="fas fa-3x fa-sync-alt fa-spin"></i>
+                                <div class="text-bold pt-2">Loading report...</div>
+                              </div>
+                            </div>
+                            <div id="reportContainer" style="display: none;">
+                              <iframe class="report-iframe" id="reportFrame" src="" title="Sentiment Analysis Report"></iframe>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- /.tab-pane -->
+                </div>
+                <!-- /.tab-content -->
+              </div><!-- /.card-body -->
+            </div>
+            <!-- ./card -->
+          </div>
+          <!-- /.col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      <b>Version</b> 1.0.0
+    </div>
+    <strong>Ministry of Revenues Public Sentiment Analysis Tool</strong>
+  </footer>
+</div>
+<!-- ./wrapper -->
+
+<!-- REQUIRED SCRIPTS -->
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+<!-- ChartJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+
+<script>
+  // Initialize charts
+  $(function () {
+    // Trend Chart
+    var trendCtx = document.getElementById('trendChart').getContext('2d');
+    var trendChart = new Chart(trendCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Positive Sentiment',
+          data: [65, 59, 80, 81, 78, 82],
+          backgroundColor: 'rgba(40, 167, 69, 0.2)',
+          borderColor: 'rgba(40, 167, 69, 1)',
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Sentiment Trend (Last 6 Months)'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    // Topics Chart
+    var topicsCtx = document.getElementById('topicsChart').getContext('2d');
+    var topicsChart = new Chart(topicsCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Tax Reform', 'Collection', 'Compliance', 'Policy', 'Services', 'Other'],
+        datasets: [{
+          label: 'Mentions',
+          data: [35, 22, 18, 12, 8, 5],
+          backgroundColor: [
+            'rgba(0, 123, 255, 0.7)',
+            'rgba(40, 167, 69, 0.7)',
+            'rgba(255, 193, 7, 0.7)',
+            'rgba(220, 53, 69, 0.7)',
+            'rgba(23, 162, 184, 0.7)',
+            'rgba(108, 117, 125, 0.7)'
+          ],
+          borderColor: [
+            'rgba(0, 123, 255, 1)',
+            'rgba(40, 167, 69, 1)',
+            'rgba(255, 193, 7, 1)',
+            'rgba(220, 53, 69, 1)',
+            'rgba(23, 162, 184, 1)',
+            'rgba(108, 117, 125, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: false
+          },
+          title: {
+            display: true,
+            text: 'Key Topics Distribution'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function(value) {
+                return value + '%';
+              }
+            }
+          }
+        }
+      }
+    });
+    
+    // Pie Chart
+    var pieCtx = document.getElementById('pieChart').getContext('2d');
+    var pieChart = new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Positive', 'Neutral', 'Negative'],
+        datasets: [{
+          data: [65, 25, 10],
+          backgroundColor: [
+            'rgba(40, 167, 69, 0.9)',
+            'rgba(255, 193, 7, 0.9)',
+            'rgba(220, 53, 69, 0.9)'
+          ],
+          borderColor: [
+            'rgba(40, 167, 69, 1)',
+            'rgba(255, 193, 7, 1)',
+            'rgba(220, 53, 69, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+          title: {
+            display: true,
+            text: 'Sentiment Distribution'
+          }
+        },
+        cutout: '70%'
+      }
+    });
+    
+    // Sentiment Chart (in analysis tab)
+    var sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+    var sentimentChart = new Chart(sentimentCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Positive', 'Neutral', 'Negative'],
+        datasets: [{
+          data: [72, 20, 8],
+          backgroundColor: [
+            'rgba(40, 167, 69, 0.9)',
+            'rgba(255, 193, 7, 0.9)',
+            'rgba(220, 53, 69, 0.9)'
+          ],
+          borderColor: [
+            'rgba(40, 167, 69, 1)',
+            'rgba(255, 193, 7, 1)',
+            'rgba(220, 53, 69, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          }
+        },
+        cutout: '70%'
+      }
+    });
+  });
+  
+  // Load report from templates directory
+  function loadReport(type) {
+    const reportContainer = document.getElementById('reportContainer');
+    const reportLoading = document.getElementById('reportLoading');
+    const reportFrame = document.getElementById('reportFrame');
+    
+    reportContainer.style.display = 'none';
+    reportLoading.style.display = 'block';
+    
+    // Simulate loading delay
+    setTimeout(() => {
+      // In a real application, this would fetch from your server
+      // For this example, we'll simulate loading different reports
+      let reportPath = '';
+      switch(type) {
+        case 'weekly':
+          reportPath = '/templates/sentiment_analysis_weekly.html';
+          break;
+        case 'monthly':
+          reportPath = '/templates/sentiment_analysis_monthly.html';
+          break;
+        default:
+          reportPath = '/templates/sentiment_analysis.html';
+      }
+      
+      // Set the iframe source (in a real app, this would be the actual path)
+      reportFrame.src = reportPath;
+      
+      // Handle the iframe load event
+      reportFrame.onload = function() {
+        reportLoading.style.display = 'none';
+        reportContainer.style.display = 'block';
+      };
+      
+      // In case the iframe fails to load
+      setTimeout(() => {
+        if (reportLoading.style.display !== 'none') {
+          reportLoading.style.display = 'none';
+          reportContainer.style.display = 'block';
+          reportFrame.srcdoc = `
+            <html>
+              <head>
+                <title>Report Preview</title>
+                <style>
+                  body { font-family: Arial, sans-serif; padding: 20px; }
+                  h1 { color: #007bff; }
+                  .report-content { margin-top: 20px; }
+                </style>
+              </head>
+              <body>
+                <h1>${type.charAt(0).toUpperCase() + type.slice(1)} Sentiment Analysis Report</h1>
+                <div class="report-content">
+                  <p>This is a simulated ${type} sentiment analysis report.</p>
+                  <p>In a real application, this would display the contents of:</p>
+                  <p><strong>/templates/sentiment_analysis${type === 'daily' ? '' : '_' + type}.html</strong></p>
+                  <p>With actual data from your sentiment analysis system.</p>
+                </div>
+              </body>
+            </html>
+          `;
+        }
+      }, 2000);
+    }, 500);
+  }
+  
+  // Simulate crawling process
+  function startCrawling() {
+    const urls = document.getElementById("targetUrls").value;
+    const keywords = document.getElementById("keywords").value;
+    
+    if (!urls) {
+      alert("Please enter at least one URL to crawl");
+      return;
+    }
+    
+    document.getElementById("crawlerLoading").style.display = "block";
+    document.getElementById("crawlerResults").innerHTML = "<p>Initializing crawler...</p>";
+    document.getElementById("crawlSummary").style.display = "none";
+    
+    // Simulate API call with timeout
+    setTimeout(() => {
+      document.getElementById("crawlerLoading").style.display = "none";
+      
+      // Sample results
+      const sampleResults = [
+        {
+          url: "https://news.gov.revenue/tax-reform",
+          title: "Public Responds Positively to New Tax Reform Measures",
+          excerpt: "The Ministry of Revenues announced new simplified tax procedures that have been well received by citizens and business owners alike.",
+          keywords: ["tax reform", "simplified procedures"]
+        },
+        {
+          url: "https://taxforum.org/discussion/123",
+          title: "Forum Discussion: New Revenue Collection Methods",
+          excerpt: "Some users express concerns about the aggressive new collection methods, while others appreciate the increased efficiency.",
+          keywords: ["revenue collection", "efficiency"]
+        },
+        {
+          url: "https://businessdaily.com/revenue-policy",
+          title: "Analysis: Impact of New Revenue Policies on Small Businesses",
+          excerpt: "Economic analysts examine how the latest fiscal policies are affecting small and medium enterprises across different sectors.",
+          keywords: ["revenue policies", "small businesses"]
+        }
+      ];
+      
+      let resultsHTML = "<h4>Crawled Content</h4>";
+      
+      sampleResults.forEach(result => {
+        resultsHTML += `
+          <div class="mb-3 pb-3 border-bottom">
+            <h5><a href="${result.url}" target="_blank">${result.title}</a></h5>
+            <p>${result.excerpt}</p>
+            <p><strong>Relevant keywords:</strong> ${result.keywords.join(", ")}</p>
+          </div>
+        `;
+      });
+      
+      document.getElementById("crawlerResults").innerHTML = resultsHTML;
+      
+      // Show summary
+      document.getElementById("summaryText").innerHTML = `
+        Crawl completed at ${new Date().toLocaleTimeString()}.<br>
+        Processed 3 pages with relevant content from ${urls.split(",").length} source URLs.<br>
+        Found ${keywords.split(",").length} keyword matches across the crawled content.
+      `;
+      document.getElementById("crawlSummary").style.display = "block";
+    }, 3000);
+  }
+  
+  // Simulate sentiment analysis
+  function analyzeSentiment() {
+    const text = document.getElementById("analysisText").value;
+    
+    if (!text) {
+      alert("Please enter some text to analyze");
+      return;
+    }
+    
+    document.getElementById("sentimentLoading").style.display = "block";
+    document.getElementById("sentimentResults").innerHTML = "<p>Processing text...</p>";
+    document.getElementById("sentimentSummary").style.display = "none";
+    
+    // Simulate API call with timeout
+    setTimeout(() => {
+      document.getElementById("sentimentLoading").style.display = "none";
+      
+      // Sample analysis
+      const sampleAnalysis = {
+        sentiment: "positive",
+        confidence: 72,
+        keywords: ["tax reform", "simplified", "efficient"],
+        highlightedText: `The new <span class="sentiment-positive">tax reform</span> package has been praised for its <span class="sentiment-positive">simplified</span> procedures and <span class="sentiment-positive">efficient</span> implementation. Citizens report higher satisfaction with the streamlined process.`
+      };
+      
+      let resultsHTML = `
+        <h4>Analysis Results</h4>
+        <p><strong>Overall sentiment:</strong> <span class="sentiment-${sampleAnalysis.sentiment}">${sampleAnalysis.sentiment} (${sampleAnalysis.confidence}% confidence)</span></p>
+        <p><strong>Key phrases:</strong> ${sampleAnalysis.keywords.join(", ")}</p>
+        <h5 class="mt-3">Highlighted Text:</h5>
+        <div class="border p-2 mt-1 bg-white">
+          ${sampleAnalysis.highlightedText}
+        </div>
+      `;
+      
+      document.getElementById("sentimentResults").innerHTML = resultsHTML;
+      
+      // Show summary
+      document.getElementById("sentimentSummaryText").innerHTML = `
+        The analyzed text shows predominantly <strong>${sampleAnalysis.sentiment}</strong> sentiment regarding revenue policies.
+        The most discussed topics include <strong>${sampleAnalysis.keywords.join(", ")}</strong>.
+      `;
+      document.getElementById("sentimentSummary").style.display = "block";
+      
+      // Update the chart data
+      var sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+      var sentimentChart = Chart.getChart(sentimentCtx);
+      sentimentChart.data.datasets[0].data = [
+        sampleAnalysis.confidence,
+        100 - sampleAnalysis.confidence - 8,
+        8
+      ];
+      sentimentChart.update();
+    }, 2000);
+  }
+  
+  // Analyze previously crawled data
+  function analyzeCrawledData() {
+    document.getElementById("sentimentLoading").style.display = "block";
+    document.getElementById("sentimentResults").innerHTML = "<p>Processing crawled data...</p>";
+    
+    // Simulate API call with timeout
+    setTimeout(() => {
+      document.getElementById("sentimentLoading").style.display = "none";
+      
+      // Sample analysis
+      const sampleAnalysis = {
+        totalDocuments: 42,
+        positive: 28,
+        neutral: 10,
+        negative: 4,
+        trendingTopics: [
+          {topic: "Tax Reform", mentions: 35},
+          {topic: "Online Services", mentions: 22},
+          {topic: "Compliance", mentions: 18}
+        ]
+      };
+      
+      let resultsHTML = `
+        <h4>Crawled Data Analysis</h4>
+        <p><strong>Documents analyzed:</strong> ${sampleAnalysis.totalDocuments}</p>
+        <p><strong>Sentiment distribution:</strong></p>
+        <ul class="list-unstyled">
+          <li><span class="sentiment-positive">Positive:</span> ${sampleAnalysis.positive} (${Math.round(sampleAnalysis.positive/sampleAnalysis.totalDocuments*100)}%)</li>
+          <li><span class="sentiment-neutral">Neutral:</span> ${sampleAnalysis.neutral} (${Math.round(sampleAnalysis.neutral/sampleAnalysis.totalDocuments*100)}%)</li>
+          <li><span class="sentiment-negative">Negative:</span> ${sampleAnalysis.negative} (${Math.round(sampleAnalysis.negative/sampleAnalysis.totalDocuments*100)}%)</li>
+        </ul>
+        <h5 class="mt-3">Trending Topics:</h5>
+        <ol>
+          ${sampleAnalysis.trendingTopics.map(topic => 
+            `<li><strong>${topic.topic}:</strong> mentioned ${topic.mentions} times</li>`
+          ).join("")}
+        </ol>
+      `;
+      
+      document.getElementById("sentimentResults").innerHTML = resultsHTML;
+      
+      // Show summary
+      document.getElementById("sentimentSummaryText").innerHTML = `
+        Analysis of crawled content shows <strong>${Math.round(sampleAnalysis.positive/sampleAnalysis.totalDocuments*100)}% positive</strong> sentiment overall.
+        The most discussed topic is <strong>${sampleAnalysis.trendingTopics[0].topic}</strong> with ${sampleAnalysis.trendingTopics[0].mentions} mentions.
+      `;
+      document.getElementById("sentimentSummary").style.display = "block";
+      
+      // Update the chart data
+      var sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+      var sentimentChart = Chart.getChart(sentimentCtx);
+      sentimentChart.data.datasets[0].data = [
+        Math.round(sampleAnalysis.positive/sampleAnalysis.totalDocuments*100),
+        Math.round(sampleAnalysis.neutral/sampleAnalysis.totalDocuments*100),
+        Math.round(sampleAnalysis.negative/sampleAnalysis.totalDocuments*100)
+      ];
+      sentimentChart.update();
+    }, 2500);
+  }
+  
+  // Load daily report by default when reports tab is shown
+  $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+    if (e.target.getAttribute('href') === '#reports') {
+      loadReport('daily');
+    }
+  });
+</script>
+</body>
+</html>

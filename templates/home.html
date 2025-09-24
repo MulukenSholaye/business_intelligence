@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Intelligence and Data Warehousing for Tax Administration - Ministry of Revenues</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Montserrat (for header) -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Light gray background */
+            color: #334155; /* Dark text color */
+        }
+        /* Stylish font for header */
+        .header-logo-font {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Updated text gradient for a much darker blue flavor */
+        .text-gradient-dark-blue {
+            background: linear-gradient(to right, #1E3A8A, #1D4ED8); /* Darker Blue to a slightly lighter one */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Updated primary button for a darker blue flavor */
+        .btn-primary {
+            background-image: linear-gradient(to right, #1E3A8A, #1D4ED8); /* Darker Blue to a slightly lighter one */
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4); /* Shadow color updated to match darker blue */
+        }
+
+        /* Carousel specific styles */
+        .carousel-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .carousel-slide {
+            display: flex; /* Use flexbox for horizontal layout */
+            transition: transform 0.5s ease-in-out;
+        }
+        .carousel-item {
+            min-width: 100%; /* Each item takes full width of its container */
+            flex-shrink: 0; /* Prevent items from shrinking */
+        }
+        .carousel-dot {
+            height: 10px;
+            width: 10px;
+            background-color: #cbd5e0; /* Gray-300 */
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-dot.active {
+            background-color: #1D4ED8; /* Darker blue for active dot */
+        }
+
+        /* Floating Menu specific styles */
+        .floating-menu-container {
+            position: fixed;
+            bottom: 24px; /* Tailwind 'bottom-6' */
+            right: 24px;  /* Tailwind 'right-6' */
+            z-index: 50; /* Tailwind 'z-50' */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .floating-menu-items {
+            display: flex;
+            flex-direction: column;
+            gap: 12px; /* Tailwind 'gap-3' */
+            margin-bottom: 16px; /* Space between menu items and main button */
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            transform: translateY(20px); /* Start slightly below */
+            opacity: 0;
+            pointer-events: none; /* Disable interaction when hidden */
+        }
+
+        .floating-menu-items.show {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto; /* Enable interaction when shown */
+        }
+
+        .floating-menu-button {
+            background-image: linear-gradient(to right, #1E3A8A, #1D4ED8); /* Darker Blue */
+            color: white;
+            border-radius: 9999px; /* Tailwind 'rounded-full' */
+            width: 56px; /* Tailwind 'w-14' */
+            height: 56px; /* Tailwind 'h-14' */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .floating-menu-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.6);
+        }
+
+        .floating-menu-item-link {
+            background-color: white;
+            color: #1D4ED8; /* Darker blue */
+            padding: 8px 16px; /* Tailwind 'px-4 py-2' */
+            border-radius: 9999px; /* Tailwind 'rounded-full' */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-weight: 500; /* Tailwind 'font-medium' */
+            text-decoration: none;
+            transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+
+        .floating-menu-item-link:hover {
+            background-color: #DBEAFE; /* Blue-100 */
+            transform: translateX(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Text Animation for Hero Heading */
+        .animated-text {
+            display: inline-block;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1; /* Initial state */
+        }
+
+        /* Wave Canvas Styles */
+        .wave-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Position behind content */
+            pointer-events: none; /* Allow clicks to pass through to content above */
+        }
+
+        /* Custom diagonal cut for blue banners */
+        .blue-banner-diagonal-cut {
+            clip-path: polygon(0% 0%, 100% 0%, 100% calc(100% - 100px), calc(100% - 100px) 100%, 0% 100%);
+            /* Adjust 100px to control the size/sharpness of the diagonal cut */
+        }
+
+        /* Animated Underscore Styles */
+        .animated-underscore-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: rgba(30, 58, 138, 0.2); /* Dark blue with transparency */
+            z-index: 40; /* Lower than floating menu but still on top of page content */
+        }
+
+        .animated-underscore-line {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, #1E3A8A, #1D4ED8, #1E3A8A); /* Glowing gradient effect */
+            box-shadow: 0 0 10px #1D4ED8, 0 0 20px #1D4ED8; /* Glowing effect */
+        }
+
+        /* Animated dot element */
+        .animated-dot {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            background-color: #1D4ED8;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #1D4ED8, 0 0 16px #1D4ED8, 0 0 24px #1D4ED8; /* Intense glow */
+            animation: moveDot 8s linear infinite;
+        }
+
+        /* Keyframes for dot movement */
+        @keyframes moveDot {
+            0% { left: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { left: 100%; opacity: 0; }
+        }
+
+        /* Floating Chatbot Styles */
+        .chatbot-container {
+            position: fixed;
+            bottom: 112px; /* Positioned above the floating menu */
+            right: 24px;
+            z-index: 60; /* Higher z-index than floating menu */
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            pointer-events: none; /* Allow clicks to pass through until the button is activated */
+        }
+
+        .chatbot-button {
+            background-image: linear-gradient(to right, #10B981, #059669); /* Green gradient */
+            color: white;
+            border-radius: 9999px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            pointer-events: auto; /* Enable clicks on the button */
+        }
+        
+        .chatbot-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .chat-window {
+            background-color: white;
+            width: 320px;
+            height: 480px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100px) scale(0.8);
+            opacity: 0;
+            pointer-events: none;
+            transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+            margin-bottom: 12px; /* Space between chat window and button */
+        }
+
+        .chat-window.show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .reports-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+        }
+
+        .report-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        
+        .report-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm py-3">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <!-- Logo or Ministry Name -->
+            <a href="#" class="flex items-center space-x-2">
+                <!-- You can replace this with an actual logo -->
+                <svg class="h-7 w-7 text-blue-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span class="text-base font-bold text-gray-800 header-logo-font">Ministry of Revenues</span>
+            </a>
+            <!-- Navigation (Optional, can be added if more pages exist) -->
+            <nav class="hidden md:block">
+                <ul class="flex space-x-6">
+                    <li><a href="#features" class="text-gray-600 hover:text-blue-800 font-medium transition duration-300">Features</a></li>
+                    <li><a href="#benefits" class="text-gray-600 hover:text-blue-800 font-medium transition duration-300">Benefits</a></li>
+                    <li><a href="#testimonials" class="text-gray-600 hover:text-blue-800 font-medium transition duration-300">Testimonials</a></li>
+                    <li><a href="#contact" class="text-gray-600 hover:text-blue-800 font-medium transition duration-300">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-blue-900 to-blue-800 text-white py-6 md:py-8 overflow-hidden blue-banner-diagonal-cut">
+        <canvas id="heroWaveCanvas" class="wave-canvas"></canvas>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h1 class="text-2xl md:text-4xl font-extrabold leading-tight mb-3">
+                Revolutionizing
+                <br>
+                <span id="animatedHeroText" class="animated-text text-yellow-300">Tax Administration</span>
+                <br>
+                with Business Intelligence and Data Warehousing
+            </h1>
+            <p class="text-base md:text-lg mb-4 max-w-3xl mx-auto opacity-90">
+                Empowering the Ministry of Revenues with advanced **Business Intelligence and Data Warehousing** for smarter decisions, enhanced compliance, and efficient revenue collection.
+            </p>
+            <a href="#contact" class="btn-primary inline-block px-5 py-2.5 rounded-full text-base font-semibold shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300">
+                Learn More About Our System
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-8 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-center mb-6 text-gray-800">Key <span class="text-gradient-dark-blue">Features</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Feature Card 1 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 flex flex-col items-center text-center">
+                    <svg class="h-10 w-10 text-blue-700 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    <h3 class="text-base font-bold mb-1 text-gray-700">Comprehensive Data Integration</h3>
+                    <p class="text-xs text-gray-600">
+                        Seamlessly integrates tax data from various sources, ensuring a single, unified view of all revenue information.
+                    </p>
+                </div>
+                <!-- Feature Card 2 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 flex flex-col items-center text-center">
+                    <svg class="h-10 w-10 text-blue-700 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M18 18l-4-4m-1-8H6a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2z" />
+                    </svg>
+                    <h3 class="text-base font-bold mb-1 text-gray-700">Advanced Analytics & Reporting</h3>
+                    <p class="text-xs text-gray-600">
+                        Powerful tools for in-depth analysis, custom report generation, and interactive dashboards for data visualization.
+                    </p>
+                </div>
+                <!-- Feature Card 3 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 flex flex-col items-center text-center">
+                    <svg class="h-10 w-10 text-blue-700 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.002 12.002 0 0012 21.011a12.002 12.002 0 008.618-3.04z" />
+                    </svg>
+                    <h3 class="text-base font-bold mb-1 text-gray-700">Fraud Detection & Risk Management</h3>
+                    <p class="text-xs text-gray-600">
+                        Utilize predictive models and anomaly detection to identify potential tax fraud and mitigate risks effectively.
+                    </p>
+                </div>
+                <!-- Feature Card 4 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 flex flex-col items-center text-center">
+                    <svg class="h-10 w-10 text-blue-700 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.592 1L21 6V5a2 2 0 00-2-2H3a2 2 0 00-2 2v1c.512.598 1.482 1 2.592 1L12 8zm-6 9h.01M12 18h.01M18 18h.01" />
+                    </svg>
+                    <h3 class="text-base font-bold mb-1 text-gray-700">Taxpayer Segmentation</h3>
+                    <p class="text-xs text-gray-600">
+                        Classify taxpayers based on various criteria to tailor communication, services, and compliance strategies.
+                    </p>
+                </div>
+                <!-- Feature Card 5 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 flex flex-col items-center text-center">
+                    <svg class="h-10 w-10 text-blue-700 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                    <h3 class="text-base font-bold mb-1 text-gray-700">Forecasting & Trend Analysis</h3>
+                    <p class="text-xs text-gray-600">
+                        Predict future revenue trends, identify economic shifts, and proactively adjust tax policies and collection efforts.
+                    </p>
+                </div>
+                <!-- Feature Card 6 -->
+                <div class="bg-white p-4 rounded-xl shadow-lg hover:shadow-2xl transition duration-300 flex flex-col items-center text-center">
+                    <svg class="h-10 w-10 text-blue-700 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4-4m-4 0l4 4" />
+                    </svg>
+                    <h3 class="text-base font-bold mb-1 text-gray-700">Secure & Scalable Infrastructure</h3>
+                    <p class="text-xs text-gray-600">
+                        Built on a robust and secure architecture, designed to handle large volumes of data and scale with your needs.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Benefits Section -->
+    <section id="benefits" class="py-8 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-center mb-6 text-gray-800">Achieve Greater <span class="text-gradient-dark-blue">Outcomes</span></h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+                <div class="space-y-3">
+                    <!-- Benefit 1 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-700">Enhanced Decision-Making</h3>
+                            <p class="text-xs text-gray-600">
+                                Gain deeper insights into tax trends, taxpayer behavior, and economic indicators to make informed policy and operational decisions.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Benefit 2 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-700">Improved Tax Compliance</h3>
+                            <p class="text-xs text-gray-600">
+                                Proactively identify non-compliant taxpayers and develop targeted strategies to improve overall tax adherence.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Benefit 3 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-700">Optimized Revenue Collection</h3>
+                            <p class="text-xs text-gray-600">
+                                Streamline collection processes and identify new revenue opportunities, leading to increased tax revenues.
+                            </p>
+                        </div>
+                    </div>
+                    <!-- Benefit 4 -->
+                    <div class="flex items-start space-x-3">
+                        <div class="flex-shrink-0 mt-0.5">
+                            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-semibold text-gray-700">Operational Efficiency</h3>
+                            <p class="text-xs text-gray-600">
+                                Automate reporting and data analysis tasks, freeing up valuable resources for more strategic initiatives.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <!-- Placeholder Image for Benefits -->
+                    <img src="https://placehold.co/500x350/E0E7FF/4F46E5?text=Data+Insights" alt="Data Insights" class="rounded-xl shadow-lg transform hover:scale-105 transition duration-300">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section with Carousel -->
+    <section id="testimonials" class="py-8 bg-gray-100">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-center mb-6 text-gray-800">What Our <span class="text-gradient-dark-blue">Partners Say</span></h2>
+
+            <div class="max-w-3xl mx-auto carousel-container relative rounded-xl shadow-xl bg-white p-5">
+                <div class="carousel-slide flex">
+                    <!-- Testimonial 1 -->
+                    <div class="carousel-item flex-shrink-0 w-full text-center px-4">
+                        <p class="text-sm italic text-gray-700 mb-3">
+                            "The **Business Intelligence and Data Warehousing** system has been a game-changer for our tax administration. The insights gained have significantly improved our compliance rates and decision-making capabilities."
+                        </p>
+                        <div class="font-semibold text-gray-800">- Senior Analyst, Tax Policy Department</div>
+                        <div class="text-xs text-gray-500">Ministry of Revenues</div>
+                    </div>
+                    <!-- Testimonial 2 -->
+                    <div class="carousel-item flex-shrink-0 w-full text-center px-4">
+                        <p class="text-sm italic text-gray-700 mb-3">
+                            "With **Business Intelligence and Data Warehousing**, we've streamlined our data analysis processes, allowing us to identify fraud patterns much faster and allocate resources more effectively. A truly invaluable tool!"
+                        </p>
+                        <div class="font-semibold text-gray-800">- Head of Fraud Detection Unit</div>
+                        <div class="text-xs text-gray-500">Ministry of Revenues</div>
+                    </div>
+                    <!-- Testimonial 3 -->
+                    <div class="carousel-item flex-shrink-0 w-full text-center px-4">
+                        <p class="text-sm italic text-gray-700 mb-3">
+                            "The predictive analytics capabilities are outstanding. We can now forecast revenue trends with greater accuracy, which is crucial for national financial planning."
+                        </p>
+                        <div class="font-semibold text-gray-800">- Director, Revenue Forecasting</div>
+                        <div class="text-xs text-gray-500">Ministry of Finance</div>
+                    </div>
+                </div>
+
+                <!-- Carousel Navigation (Dots) -->
+                <div class="flex justify-center mt-4 space-x-2">
+                    <span class="carousel-dot active" data-slide-index="0"></span>
+                    <span class="carousel-dot" data-slide-index="1"></span>
+                    <span class="carousel-dot" data-slide-index="2"></span>
+                </div>
+
+                <!-- Navigation Buttons (Optional, added for better UX) -->
+                <button aria-label="Previous slide" class="absolute top-1/2 left-3 -translate-y-1/2 bg-blue-800 text-white p-1.5 rounded-full shadow-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition-colors duration-300" onclick="prevSlide()">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <button aria-label="Next slide" class="absolute top-1/2 right-3 -translate-y-1/2 bg-blue-800 text-white p-1.5 rounded-full shadow-md hover:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition-colors duration-300" onclick="nextSlide()">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reports Section -->
+    <section id="reports" class="py-8 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-center mb-6 text-gray-800">Key <span class="text-gradient-dark-blue">Reports</span> & Dashboards</h2>
+            <div class="reports-grid">
+                <!-- Report Card 1: Revenue Collection by Region -->
+                <div class="report-card">
+                    <svg class="h-10 w-10 text-blue-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <h3 class="text-lg font-bold mb-2 text-gray-800">Revenue Collection by Region</h3>
+                    <p class="text-sm text-gray-600">Interactive map showing tax revenue distribution across different regions.</p>
+                </div>
+                <!-- Report Card 2: Tax Compliance Rate -->
+                <div class="report-card">
+                    <svg class="h-10 w-10 text-blue-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <h3 class="text-lg font-bold mb-2 text-gray-800">Tax Compliance Rate</h3>
+                    <p class="text-sm text-gray-600">Dashboard to monitor compliance rates and identify non-compliant sectors or individuals.</p>
+                </div>
+                <!-- Report Card 3: Audit Effectiveness -->
+                <div class="report-card">
+                    <svg class="h-10 w-10 text-blue-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                    <h3 class="text-lg font-bold mb-2 text-gray-800">Audit Effectiveness</h3>
+                    <p class="text-sm text-gray-600">Analytics on the success rate of tax audits and the recovered revenue.</p>
+                </div>
+                <!-- Report Card 4: Taxpayer Segmentation Analysis -->
+                <div class="report-card">
+                    <svg class="h-10 w-10 text-blue-700 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6m-12 0h6m-12 0v-1a6 6 0 00-4-5.656M15 21v-1a6 6 0 01-4-5.656" />
+                    </svg>
+                    <h3 class="text-lg font-bold mb-2 text-gray-800">Taxpayer Segmentation</h3>
+                    <p class="text-sm text-gray-600">Visualizations to help understand and target different taxpayer groups effectively.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="relative bg-gradient-to-br from-blue-900 to-blue-800 text-white py-6 md:py-8 overflow-hidden blue-banner-diagonal-cut">
+        <canvas id="ctaWaveCanvas" class="wave-canvas"></canvas>
+        <div class="container mx-auto px-4 text-center relative z-10">
+            <h2 class="text-2xl md:text-4xl font-extrabold mb-3">Ready to Transform Your Tax Administration?</h2>
+            <p class="text-base md:text-lg mb-4 max-w-2xl mx-auto opacity-90">
+                Connect with our team to discover how the **Business Intelligence and Data Warehousing** system can empower your Ministry of Revenues.
+            </p>
+            <a href="#contact" class="btn-primary inline-block px-5 py-2.5 rounded-full text-base font-semibold shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300">
+                Get in Touch
+            </a>
+        </a href="#">
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-8 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-2xl md:text-4xl font-extrabold text-center mb-6 text-gray-800">Contact <span class="text-gradient-dark-blue">Us</span></h2>
+            <div class="max-w-2xl mx-auto bg-white p-5 rounded-xl shadow-lg">
+                <form class="space-y-3">
+                    <div>
+                        <label for="name" class="block text-gray-700 text-sm font-bold mb-1">Full Name</label>
+                        <input type="text" id="name" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="John Doe">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-gray-700 text-sm font-bold mb-1">Email Address</label>
+                        <input type="email" id="email" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="john.doe@example.com">
+                    </div>
+                    <div>
+                        <label for="organization" class="block text-gray-700 text-sm font-bold mb-1">Organization</label>
+                        <input type="text" id="organization" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Ministry of Revenues">
+                    </div>
+                    <div>
+                        <label for="message" class="block text-gray-700 text-sm font-bold mb-1">Message</label>
+                        <textarea id="message" rows="3" class="shadow-sm appearance-none border rounded-lg w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="How can we help you?"></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary w-full py-2 rounded-lg text-base font-semibold text-white shadow-md hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        Send Message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-gray-900 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">&copy; 2025 Ministry of Revenues. All rights reserved.</p>
+            <div class="flex justify-center space-x-4 text-xs">
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition duration-300">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Chatbot -->
+    <div class="chatbot-container">
+        <!-- Chat window -->
+        <div id="chatWindow" class="chat-window shadow-xl">
+            <div class="bg-gradient-to-r from-blue-700 to-blue-900 text-white p-3 rounded-t-lg flex items-center justify-between">
+                <h3 class="font-bold">RevenueBot</h3>
+                <span class="text-xs opacity-75">Online</span>
+            </div>
+            <div class="flex-grow p-4 overflow-y-auto space-y-3 text-sm">
+                <!-- Chat messages here -->
+                <div class="flex justify-start">
+                    <div class="bg-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%]">
+                        Hello! Welcome to the Ministry of Revenues. How can I assist you today?
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <div class="bg-blue-600 text-white p-3 rounded-l-xl rounded-br-xl max-w-[85%]">
+                        I'd like to learn more about the Business Intelligence system.
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="bg-gray-200 text-gray-800 p-3 rounded-r-xl rounded-bl-xl max-w-[85%]">
+                        Certainly. Our system provides real-time analytics and reporting to help with fraud detection and revenue forecasting. What specific feature are you interested in?
+                    </div>
+                </div>
+            </div>
+            <div class="p-3 bg-gray-100 rounded-b-lg flex items-center">
+                <input type="text" placeholder="Type your message..." class="flex-grow px-3 py-2 rounded-full text-sm border focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button class="bg-blue-600 text-white p-2 rounded-full ml-2 hover:bg-blue-700 transition duration-300">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Chatbot button -->
+        <button id="chatbotButton" class="chatbot-button">
+            <!-- Open Icon -->
+            <svg id="chatbotIconOpen" class="h-8 w-8 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="transform: rotate(0deg);">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <!-- Close Icon -->
+            <svg id="chatbotIconClose" class="h-8 w-8 absolute transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="transform: rotate(90deg); opacity: 0;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Floating Menu -->
+    <div class="floating-menu-container">
+        <div id="floatingMenuItems" class="floating-menu-items">
+            <a href="#" class="floating-menu-item-link">Home</a>
+            <a href="#features" class="floating-menu-item-link">Features</a>
+            <a href="#benefits" class="floating-menu-item-link">Benefits</a>
+            <a href="#testimonials" class="floating-menu-item-link">Testimonials</a>
+            <a href="#reports" class="floating-menu-item-link">Reports</a>
+            <a href="#contact" class="floating-menu-item-link">Contact</a>
+        </div>
+        <button id="floatingMenuButton" class="floating-menu-button" aria-label="Toggle floating menu">
+            <svg id="floatingMenuIconOpen" class="h-8 w-8 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="transform: rotate(0deg);">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+            <svg id="floatingMenuIconClose" class="h-8 w-8 absolute transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="transform: rotate(90deg); opacity: 0;">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+    </div>
+
+    <!-- Animated Glowing Underscore Line -->
+    <div class="animated-underscore-container">
+        <div class="animated-underscore-line"></div>
+        <div class="animated-dot"></div>
+    </div>
+
+    <script>
+        // Carousel JavaScript (existing code)
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-item');
+        const totalSlides = slides.length;
+        const carouselSlideContainer = document.querySelector('.carousel-slide');
+        const dots = document.querySelectorAll('.carousel-dot');
+        let autoSlideInterval;
+
+        function updateCarousel() {
+            carouselSlideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+            resetAutoSlide();
+        }
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => goToSlide(index));
+        });
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 5000);
+        }
+
+function resetAutoSlide() {
+    clearInterval(autoSlideInterval);
+    startAutoSlide();
+}
+
+// Floating Menu JavaScript
+const floatingMenuButton = document.getElementById('floatingMenuButton');
+const floatingMenuItems = document.getElementById('floatingMenuItems');
+const floatingMenuIconOpen = document.getElementById('floatingMenuIconOpen');
+const floatingMenuIconClose = document.getElementById('floatingMenuIconClose');
+let menuOpen = false;
+
+floatingMenuButton.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    if (menuOpen) {
+        floatingMenuItems.classList.add('show');
+        floatingMenuIconOpen.style.transform = 'rotate(-90deg)';
+        floatingMenuIconOpen.style.opacity = '0';
+        floatingMenuIconClose.style.transform = 'rotate(0deg)';
+        floatingMenuIconClose.style.opacity = '1';
+    } else {
+        floatingMenuItems.classList.remove('show');
+        floatingMenuIconOpen.style.transform = 'rotate(0deg)';
+        floatingMenuIconOpen.style.opacity = '1';
+        floatingMenuIconClose.style.transform = 'rotate(90deg)';
+        floatingMenuIconClose.style.opacity = '0';
+    }
+});
+
+// Floating Chatbot JavaScript
+const chatbotButton = document.getElementById('chatbotButton');
+const chatWindow = document.getElementById('chatWindow');
+const chatbotIconOpen = document.getElementById('chatbotIconOpen');
+const chatbotIconClose = document.getElementById('chatbotIconClose');
+let chatOpen = false;
+
+chatbotButton.addEventListener('click', () => {
+    chatOpen = !chatOpen;
+    if (chatOpen) {
+        chatWindow.classList.add('show');
+        chatbotIconOpen.style.transform = 'rotate(-90deg)';
+        chatbotIconOpen.style.opacity = '0';
+        chatbotIconClose.style.transform = 'rotate(0deg)';
+        chatbotIconClose.style.opacity = '1';
+    } else {
+        chatWindow.classList.remove('show');
+        chatbotIconOpen.style.transform = 'rotate(0deg)';
+        chatbotIconOpen.style.opacity = '1';
+        chatbotIconClose.style.transform = 'rotate(90deg)';
+        chatbotIconClose.style.opacity = '0';
+    }
+});
+
+
+// Text Animation JavaScript for Hero Heading
+const animatedHeroText = document.getElementById('animatedHeroText');
+const textOptions = ["Tax Administration", "Revenue Management", "ታክስ አስተዳደር"]; // Added Amharic text
+let currentTextIndex = 0;
+
+function animateText() {
+    animatedHeroText.style.opacity = 0; // Fade out
+    setTimeout(() => {
+        currentTextIndex = (currentTextIndex + 1) % textOptions.length;
+        animatedHeroText.textContent = textOptions[currentTextIndex];
+        animatedHeroText.style.opacity = 1; // Fade in
+    }, 500); // Wait for fade-out duration
+}
+
+// Start text animation
+let textAnimationInterval;
+function startTextAnimation() {
+    textAnimationInterval = setInterval(animateText, 3000); // Change text every 3 seconds (2s visible + 1s fade)
+}
+
+// Wave Animation JavaScript
+class WaveAnimation {
+    constructor(canvasId, options) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.options = {
+            numWaves: options.numWaves || 3,
+            waveColors: options.waveColors || ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.15)', 'rgba(255, 255, 255, 0.05)'],
+            baseAmplitude: options.baseAmplitude || 20,
+            baseFrequency: options.baseFrequency || 0.02,
+            speed: options.speed || 0.005
+        };
+        this.phase = 0; // Global phase for animation
+        this.init();
+    }
+
+    init() {
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+        this.animateWaves();
+    }
+
+    resizeCanvas() {
+        this.canvas.width = this.canvas.offsetWidth;
+        this.canvas.height = this.canvas.offsetHeight;
+    }
+
+    drawWave(color, amplitude, frequency, offset) {
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, this.canvas.height); // Start at bottom left
+        this.ctx.lineTo(0, this.canvas.height / 2 + amplitude * Math.sin(offset)); // Start of wave
+        for (let x = 0; x < this.canvas.width; x += 1) {
+            const y = this.canvas.height / 2 + amplitude * Math.sin(x * frequency + this.phase + offset);
+            this.ctx.lineTo(x, y);
+        }
+        this.ctx.lineTo(this.canvas.width, this.canvas.height); // End at bottom right
+        this.ctx.fillStyle = color;
+        this.ctx.fill();
+    }
+
+    animateWaves() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.phase += this.options.speed;
+
+        for (let i = 0; i < this.options.numWaves; i++) {
+            const amplitude = this.options.baseAmplitude + i * 5; // Slightly varied amplitude
+            const frequency = this.options.baseFrequency + i * 0.005; // Slightly varied frequency
+            const offset = i * Math.PI / this.options.numWaves; // Offset for layered effect
+            this.drawWave(this.options.waveColors[i % this.options.waveColors.length], amplitude, frequency, offset);
+        }
+        requestAnimationFrame(() => this.animateWaves());
+    }
+}
+
+// Initialize carousel, floating menu, text animation, and wave animations on page load
+window.onload = function() {
+    updateCarousel();
+    startAutoSlide();
+    // Ensure close icon for floating menu is hidden initially
+    floatingMenuIconClose.style.opacity = '0';
+    floatingMenuIconClose.style.transform = 'rotate(90deg)';
+    startTextAnimation(); // Start the new text animation
+
+    // Initialize wave animations
+    new WaveAnimation('heroWaveCanvas', {
+        numWaves: 4,
+        baseAmplitude: 25,
+        baseFrequency: 0.015,
+        speed: 0.003,
+        waveColors: ['rgba(255, 255, 255, 0.12)', 'rgba(255, 255, 255, 0.08)', 'rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.1)']
+    });
+    new WaveAnimation('ctaWaveCanvas', {
+        numWaves: 3,
+        baseAmplitude: 20,
+        baseFrequency: 0.02,
+        speed: 0.004,
+        waveColors: ['rgba(255, 255, 255, 0.1)', 'rgba(255, 255, 255, 0.15)', 'rgba(255, 255, 255, 0.07)']
+    });
+};
+    </script>
+</body>
+</html>
+
